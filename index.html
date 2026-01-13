@@ -7,80 +7,87 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        :root { --main: #e50914; --bg: #0c0c0c; --card: #1a1a1a; --delete: #ff4d4d; --edit: #4CAF50; --tab-inactive: #333; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; padding: 10px; margin: 0; padding-bottom: 30px; }
+        :root { --main: #e50914; --bg: #0c0c0c; --card: #1a1a1a; --delete: #ff4d4d; --edit: #4CAF50; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 30px; }
+        
+        /* Login Overlay */
+        #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-box { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #333; text-align: center; width: 85%; max-width: 350px; }
         
         .stats-bar { max-width: 500px; margin: 10px auto; background: #222; padding: 15px; border-radius: 15px; display: flex; justify-content: space-around; border: 1px solid #444; text-align: center; }
         .stat-item b { display: block; font-size: 18px; color: #ffd700; }
         .stat-item span { font-size: 10px; color: #888; text-transform: uppercase; }
 
         .menu-tabs { max-width: 500px; margin: 10px auto 0; display: flex; gap: 5px; }
-        .tab { flex: 1; padding: 15px; text-align: center; background: var(--tab-inactive); cursor: pointer; border-radius: 15px 15px 0 0; font-weight: bold; font-size: 14px; border: 1px solid #333; border-bottom: none; }
+        .tab { flex: 1; padding: 12px; text-align: center; background: #333; cursor: pointer; border-radius: 12px 12px 0 0; font-weight: bold; font-size: 12px; border: 1px solid #333; }
         .tab.active { background: var(--card); color: var(--main); border-top: 3px solid var(--main); }
 
         .app-container { max-width: 500px; margin: auto; background: var(--card); padding: 20px; border-radius: 0 0 20px 20px; border: 1px solid #333; border-top: none; }
-        h2 { text-align: center; color: var(--main); font-size: 20px; margin-bottom: 20px; }
-        
         .input-group { margin-bottom: 15px; position: relative; }
-        label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; }
-        input, textarea { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 10px; box-sizing: border-box; outline: none; }
+        input, textarea { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 10px; box-sizing: border-box; outline: none; margin-top: 5px; }
         
-        #imgPreview { width: 50px; height: 70px; border-radius: 5px; position: absolute; right: 5px; top: 22px; object-fit: cover; display: none; border: 1px solid var(--main); }
-
-        .ep-section { background: #222; padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px dashed #444; }
-        .ep-item { background: #2a2a2a; padding: 10px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid var(--main); position: relative; }
-        .btn-remove { position: absolute; top: 5px; right: 5px; background: var(--delete); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; }
-        
+        #imgPreview { width: 50px; height: 70px; border-radius: 5px; position: absolute; right: 5px; top: 25px; object-fit: cover; display: none; border: 1px solid var(--main); }
         .btn-publish { width: 100%; padding: 15px; background: var(--main); border: none; color: white; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 12px; margin-top: 20px; }
-        .btn-reset { width: 100%; padding: 10px; background: #444; border: none; color: #ccc; font-size: 14px; cursor: pointer; border-radius: 10px; margin-top: 10px; font-weight: bold; }
         
-        .movie-list-item { background:#222; padding:12px; border-radius:10px; margin-bottom:10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
+        .item-card { background:#222; padding:12px; border-radius:10px; margin-bottom:10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
+        .req-card { background:#1e1e1e; padding:15px; border-radius:12px; margin-bottom:10px; border-left: 5px solid #ffd700; }
         
-        #addSection, #manageSection { display: none; }
-        .visible { display: block !important; }
+        #adminContent { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="stats-bar">
-        <div class="stat-item"><b id="totalCount">0</b><span>Total Movies</span></div>
-        <div class="stat-item"><b id="onlineCount" style="color: #00ff00;">0</b><span>Live Traffic</span></div>
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2 style="color: var(--main);">PRITAM STUDIO</h2>
+            <input type="text" id="adminUser" placeholder="Username" style="margin-bottom: 10px;">
+            <input type="password" id="adminPass" placeholder="Password">
+            <button class="btn-publish" onclick="checkLogin()">LOGIN</button>
+        </div>
     </div>
 
-    <div class="menu-tabs">
-        <div id="tabAdd" class="tab active" onclick="showTab('add')">➕ Add Movie</div>
-        <div id="tabManage" class="tab" onclick="showTab('manage')">📂 Manage List</div>
-    </div>
-
-    <div id="addSection" class="app-container visible">
-        <h2 id="formTitle">Upload Movie</h2>
-        <div class="input-group"><label>Movie ID</label><input type="text" id="mId" placeholder="m14"></div>
-        <div class="input-group"><label>Title</label><input type="text" id="title"></div>
-        <div class="input-group">
-            <label>Poster URL</label>
-            <input type="text" id="img" oninput="previewImage(this.value)">
-            <img id="imgPreview" src="">
+    <div id="adminContent">
+        <div class="stats-bar">
+            <div class="stat-item"><b id="totalCount">0</b><span>Movies</span></div>
+            <div class="stat-item"><b id="onlineCount" style="color: #00ff00;">0</b><span>Live</span></div>
+            <div class="stat-item" onclick="logout()" style="cursor:pointer;"><b style="color:var(--delete)">➔</b><span>Logout</span></div>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <div style="flex:1" class="input-group"><label>Res</label><input type="text" id="res"></div>
-            <div style="flex:1" class="input-group"><label>Lang</label><input type="text" id="lang"></div>
-        </div>
-        <div class="input-group"><label>Description</label><textarea id="desc" rows="2"></textarea></div>
 
-        <div class="ep-section">
-            <h4 style="margin:0 0 10px; color:#ffd700;">Links</h4>
+        <div class="menu-tabs">
+            <div id="tabAdd" class="tab active" onclick="showTab('add')">➕ Add</div>
+            <div id="tabManage" class="tab" onclick="showTab('manage')">📂 List</div>
+            <div id="tabReq" class="tab" onclick="showTab('req')">💬 Req</div>
+        </div>
+
+        <div id="addSection" class="app-container">
+            <h2 id="formTitle" style="text-align: center; color: var(--main);">Upload</h2>
+            <div class="input-group"><label>Movie ID</label><input type="text" id="mId" placeholder="m14"></div>
+            <div class="input-group"><label>Title</label><input type="text" id="title"></div>
+            <div class="input-group">
+                <label>Poster URL</label><input type="text" id="img" oninput="previewImage(this.value)">
+                <img id="imgPreview" src="">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex:1" class="input-group"><label>Res</label><input type="text" id="res"></div>
+                <div style="flex:1" class="input-group"><label>Lang</label><input type="text" id="lang"></div>
+            </div>
+            <div class="input-group"><label>Description</label><textarea id="desc" rows="2"></textarea></div>
+
             <div id="episodeContainer"></div>
-            <button onclick="addEpisodeField()" style="width:100%; padding:8px; background:#ffd700; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">+ Add More Link</button>
+            <button onclick="addEpisodeField()" style="width:100%; padding:8px; background:#ffd700; border:none; border-radius:5px; font-weight:bold; margin-top:10px;">+ Add Link</button>
+            <button class="btn-publish" id="submitBtn" onclick="uploadMovie()">🚀 পাবলিশ করুন</button>
+            <button style="width:100%; margin-top:10px; background:#444; color:white; border:none; padding:10px; border-radius:10px;" onclick="clearForm()">🧹 রিসেট ফর্ম</button>
         </div>
-        
-        <button class="btn-publish" id="submitBtn" onclick="uploadMovie()">🚀 পাবলিশ করুন</button>
-        <button class="btn-reset" onclick="clearForm()">🧹 রিসেট ফর্ম</button>
-    </div>
 
-    <div id="manageSection" class="app-container">
-        <h2>Manage Database</h2>
-        <input type="text" id="searchBar" placeholder="Search movies..." onkeyup="filterMovies()" style="margin-bottom:15px; padding:10px; width:100%; background:#222; border:1px solid #ffd700; border-radius:10px; color:white;">
-        <div id="movieList"></div>
+        <div id="manageSection" class="app-container" style="display:none;">
+            <input type="text" id="searchBar" placeholder="Search..." onkeyup="filterMovies()" style="margin-bottom:15px; border:1px solid #ffd700;">
+            <div id="movieList"></div>
+        </div>
+
+        <div id="reqSection" class="app-container" style="display:none;">
+            <h2 style="text-align: center; color: #ffd700;">User Requests</h2>
+            <div id="reqList"></div>
+        </div>
     </div>
 
     <script>
@@ -96,6 +103,56 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        function checkLogin() {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            if(user === "pritam" && pass === "2026") {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                sessionStorage.setItem("isAdmin", "true");
+                loadMovies(); trackTraffic(); loadRequests();
+            } else { alert("Wrong!"); }
+        }
+
+        if(sessionStorage.getItem("isAdmin") === "true") {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            loadMovies(); trackTraffic(); loadRequests();
+        }
+
+        function logout() { sessionStorage.clear(); location.reload(); }
+
+        function showTab(type) {
+            document.getElementById('addSection').style.display = type === 'add' ? 'block' : 'none';
+            document.getElementById('manageSection').style.display = type === 'manage' ? 'block' : 'none';
+            document.getElementById('reqSection').style.display = type === 'req' ? 'block' : 'none';
+            
+            document.getElementById('tabAdd').className = type === 'add' ? 'tab active' : 'tab';
+            document.getElementById('tabManage').className = type === 'manage' ? 'tab active' : 'tab';
+            document.getElementById('tabReq').className = type === 'req' ? 'tab active' : 'tab';
+        }
+
+        function loadRequests() {
+            db.ref('requests').on('value', (snap) => {
+                const list = document.getElementById('reqList');
+                list.innerHTML = "";
+                snap.forEach(child => {
+                    const r = child.val();
+                    const id = child.key;
+                    const div = document.createElement('div');
+                    div.className = 'req-card';
+                    div.innerHTML = `
+                        <div style="font-weight:bold; color:#ffd700;">${r.movieName}</div>
+                        <div style="font-size:12px; color:#aaa; margin-top:5px;">User: ${r.userName || 'Anonymous'}</div>
+                        <button onclick="deleteReq('${id}')" style="margin-top:10px; background:red; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">ডিলিট</button>
+                    `;
+                    list.appendChild(div);
+                });
+            });
+        }
+
+        function deleteReq(id) { if(confirm("ডিলিট করবেন?")) db.ref('requests/' + id).remove(); }
+
         function trackTraffic() {
             db.ref('status').on('value', (snap) => {
                 let count = 0;
@@ -107,83 +164,51 @@
             });
         }
 
-        function clearForm() {
-            if(!confirm("আপনি কি ফর্মটি ক্লিয়ার করতে চান?")) return;
-            document.getElementById('mId').value = "";
-            document.getElementById('mId').readOnly = false;
-            document.getElementById('title').value = "";
-            document.getElementById('img').value = "";
-            document.getElementById('res').value = "";
-            document.getElementById('lang').value = "";
-            document.getElementById('desc').value = "";
-            document.getElementById('imgPreview').style.display = 'none';
-            document.getElementById('episodeContainer').innerHTML = "";
-            document.getElementById('formTitle').innerText = "Upload Movie";
-            document.getElementById('submitBtn').innerText = "🚀 পাবলিশ করুন";
-            addEpisodeField();
-        }
-
         function previewImage(url) {
             const img = document.getElementById('imgPreview');
             if(url && url.length > 10) { img.src = url; img.style.display = 'block'; }
             else { img.style.display = 'none'; }
         }
 
-        function showTab(type) {
-            document.getElementById('addSection').classList.toggle('visible', type === 'add');
-            document.getElementById('manageSection').classList.toggle('visible', type === 'manage');
-            document.getElementById('tabAdd').classList.toggle('active', type === 'add');
-            document.getElementById('tabManage').classList.toggle('active', type === 'manage');
-        }
-
         function addEpisodeField(name='', watch='', dl='') {
             const div = document.createElement('div');
-            div.className = 'ep-item';
-            div.innerHTML = `<button class="btn-remove" onclick="this.parentElement.remove()">✕</button>
-                <input type="text" class="ep-name" style="margin-bottom:5px" placeholder="Name" value="${name}">
-                <input type="text" class="ep-watch" style="margin-bottom:5px" placeholder="Watch Link" value="${watch}">
-                <input type="text" class="ep-dl" placeholder="Download Link" value="${dl}">`;
+            div.style = "background:#2a2a2a; padding:10px; margin-bottom:10px; border-radius:8px; position:relative; border-left:4px solid var(--main);";
+            div.innerHTML = `<button onclick="this.parentElement.remove()" style="position:absolute; right:5px; top:5px; color:red; border:none; background:none;">✕</button>
+                <input type="text" class="ep-name" placeholder="Name" value="${name}" style="margin-bottom:5px">
+                <input type="text" class="ep-watch" placeholder="Watch" value="${watch}" style="margin-bottom:5px">
+                <input type="text" class="ep-dl" placeholder="Download" value="${dl}">`;
             document.getElementById('episodeContainer').appendChild(div);
         }
 
         function uploadMovie() {
             const id = document.getElementById('mId').value;
-            if(!id) return alert("Movie ID দিন!");
-            if(prompt("Admin Password:") !== "2026") return alert("ভুল পাসওয়ার্ড!");
-
+            if(!id) return alert("ID?");
             let seasons = [];
-            document.querySelectorAll('.ep-item').forEach(el => {
-                const epN = el.querySelector('.ep-name').value;
-                if(epN) seasons.push({ name: epN, watch: el.querySelector('.ep-watch').value, dl: el.querySelector('.ep-dl').value });
+            document.querySelectorAll('#episodeContainer > div').forEach(el => {
+                seasons.push({ name: el.querySelector('.ep-name').value, watch: el.querySelector('.ep-watch').value, dl: el.querySelector('.ep-dl').value });
             });
-
             const data = {
                 title: document.getElementById('title').value,
                 img: document.getElementById('img').value,
                 res: document.getElementById('res').value,
                 lang: document.getElementById('lang').value,
                 desc: document.getElementById('desc').value,
-                uploadTime: new Date().toLocaleString(),
                 seasons: seasons
             };
-
-            db.ref('movies/' + id).set(data).then(() => { alert("সফলভাবে পাবলিশ হয়েছে!"); location.reload(); });
+            db.ref('movies/' + id).set(data).then(() => { alert("Done!"); location.reload(); });
         }
 
         function loadMovies() {
             db.ref('movies').on('value', (snap) => {
                 const list = document.getElementById('movieList');
-                list.innerHTML = "";
-                let count = 0;
+                list.innerHTML = ""; let count = 0;
                 snap.forEach(child => {
-                    count++;
-                    const m = child.val();
-                    const id = child.key;
+                    count++; const m = child.val(); const id = child.key;
                     const div = document.createElement('div');
-                    div.className = 'movie-list-item';
-                    div.innerHTML = `<div><b>${id}</b><br>${m.title}</div>
-                        <div><button onclick="editMovie('${id}')" style="background:var(--edit); border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Edit</button>
-                        <button onclick="deleteMovie('${id}')" style="background:var(--delete); border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer; margin-left:5px;">Del</button></div>`;
+                    div.className = 'item-card';
+                    div.innerHTML = `<div><b>${id}</b>: ${m.title}</div>
+                        <div><button onclick="editMovie('${id}')" style="background:var(--edit); border:none; color:white; padding:5px; border-radius:5px;">Edit</button>
+                        <button onclick="deleteMovie('${id}')" style="background:var(--delete); border:none; color:white; padding:5px; border-radius:5px;">Del</button></div>`;
                     list.appendChild(div);
                 });
                 document.getElementById('totalCount').innerText = count;
@@ -193,34 +218,27 @@
         function editMovie(id) {
             db.ref('movies/' + id).once('value', (snap) => {
                 const m = snap.val();
-                document.getElementById('mId').value = id;
-                document.getElementById('mId').readOnly = true;
-                document.getElementById('title').value = m.title;
-                document.getElementById('img').value = m.img;
-                previewImage(m.img);
-                document.getElementById('res').value = m.res;
-                document.getElementById('lang').value = m.lang;
-                document.getElementById('desc').value = m.desc;
+                document.getElementById('mId').value = id; document.getElementById('mId').readOnly = true;
+                document.getElementById('title').value = m.title; document.getElementById('img').value = m.img;
+                previewImage(m.img); document.getElementById('res').value = m.res;
+                document.getElementById('lang').value = m.lang; document.getElementById('desc').value = m.desc;
                 document.getElementById('episodeContainer').innerHTML = "";
-                if(m.seasons) m.seasons.forEach(s => addEpisodeField(s.name, s.watch, s.dl));
+                m.seasons.forEach(s => addEpisodeField(s.name, s.watch, s.dl));
                 showTab('add');
-                document.getElementById('formTitle').innerText = "Editing Mode";
-                document.getElementById('submitBtn').innerText = "✅ আপডেট করুন";
             });
         }
 
-        function deleteMovie(id) {
-            if(prompt("মুছে ফেলার পাসওয়ার্ড দিন:") === "2026") db.ref('movies/' + id).remove();
-        }
+        function deleteMovie(id) { if(confirm("Delete?")) db.ref('movies/' + id).remove(); }
 
         function filterMovies() {
             let q = document.getElementById('searchBar').value.toUpperCase();
-            document.querySelectorAll('.movie-list-item').forEach(el => {
+            document.querySelectorAll('.item-card').forEach(el => {
                 el.style.display = el.innerText.toUpperCase().includes(q) ? "" : "none";
             });
         }
 
-        window.onload = () => { addEpisodeField(); loadMovies(); trackTraffic(); };
+        function clearForm() { location.reload(); }
+        window.onload = () => { if(sessionStorage.getItem("isAdmin") !== "true") addEpisodeField(); };
     </script>
 </body>
 </html>
