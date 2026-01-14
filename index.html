@@ -193,8 +193,9 @@
                 res: document.getElementById('res').value,
                 lang: document.getElementById('lang').value,
                 desc: document.getElementById('desc').value,
+                uploadTime: firebase.database.ServerValue.TIMESTAMP, 
                 seasons: seasons
-            };
+        };
             db.ref('movies/' + id).set(data).then(() => { alert("Done!"); location.reload(); });
         }
 
