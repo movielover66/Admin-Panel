@@ -196,7 +196,37 @@
                 uploadTime: firebase.database.ServerValue.TIMESTAMP, 
                 seasons: seasons
         };
-            db.ref('movies/' + id).set(data).then(() => { alert("Done!"); location.reload(); });
+            db.ref('movies/' + id).set(data).then(() => {
+    // ইনবিল্ট সুন্দর এনিমেটেড পপআপ
+    const doneMsg = document.createElement('div');
+    doneMsg.innerHTML = "✅ মুভিটি সফলভাবে পাবলিশ হয়েছে!";
+    doneMsg.style.cssText = `
+        position: fixed; 
+        top: 20px; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        background: #ffd700; 
+        color: #000; 
+        padding: 15px 30px; 
+        border-radius: 50px; 
+        z-index: 9999; 
+        font-weight: bold; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        transition: all 0.5s ease;
+        border: 2px solid #fff;
+    `;
+    document.body.appendChild(doneMsg);
+    
+    // ৩.৫ সেকেন্ড পর পেজ রিলোড হবে (যাতে ইউজার মেসেজটি পড়তে পারে)
+    setTimeout(() => { 
+        doneMsg.style.opacity = '0';
+        doneMsg.style.top = '0px';
+        setTimeout(() => { location.reload(); }, 500); 
+    }, 3000); 
+}).catch((error) => {
+    alert("দুঃখিত, এরর: " + error.message);
+});
+            
         }
 
         function loadMovies() {
