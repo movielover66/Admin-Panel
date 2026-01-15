@@ -3,273 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>প্রীতম স্টুডিও - প্রো অ্যাডমিন</title>
+    <title>Admin - Premium Movie Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <style>
-        :root { --main: #e50914; --bg: #0c0c0c; --card: #1a1a1a; --delete: #ff4d4d; --edit: #4CAF50; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 30px; }
-        
-        /* Login Overlay */
-        #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-box { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #333; text-align: center; width: 85%; max-width: 350px; }
-        
-        .stats-bar { max-width: 500px; margin: 10px auto; background: #222; padding: 15px; border-radius: 15px; display: flex; justify-content: space-around; border: 1px solid #444; text-align: center; }
-        .stat-item b { display: block; font-size: 18px; color: #ffd700; }
-        .stat-item span { font-size: 10px; color: #888; text-transform: uppercase; }
+        :root { --primary: #e50914; --bg: #121212; --card: #1e1e1e; --text: #fff; --gray: #b3b3b3; --nav-bg: #181818; }
+        body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; overflow-x: hidden; padding-top: 70px; }
 
-        .menu-tabs { max-width: 500px; margin: 10px auto 0; display: flex; gap: 5px; }
-        .tab { flex: 1; padding: 12px; text-align: center; background: #333; cursor: pointer; border-radius: 12px 12px 0 0; font-weight: bold; font-size: 12px; border: 1px solid #333; }
-        .tab.active { background: var(--card); color: var(--main); border-top: 3px solid var(--main); }
+        /* LOGIN */
+        #loginOverlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .login-box { background: #1a1a1a; padding: 40px; border-radius: 15px; text-align: center; border: 1px solid #333; width: 300px; box-shadow: 0 0 50px rgba(229, 9, 20, 0.3); }
+        .login-input { width: 100%; padding: 12px; margin: 10px 0; background: #333; border: 1px solid #444; border-radius: 5px; color: white; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 12px; background: var(--primary); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
 
-        .app-container { max-width: 500px; margin: auto; background: var(--card); padding: 20px; border-radius: 0 0 20px 20px; border: 1px solid #333; border-top: none; }
-        .input-group { margin-bottom: 15px; position: relative; }
-        input, textarea { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 10px; box-sizing: border-box; outline: none; margin-top: 5px; }
+        /* NAV */
+        .header-nav { position: fixed; top: 0; width: 100%; height: 60px; background: var(--nav-bg); border-bottom: 1px solid #333; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .brand { font-size: 20px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
         
-        #imgPreview { width: 50px; height: 70px; border-radius: 5px; position: absolute; right: 5px; top: 25px; object-fit: cover; display: none; border: 1px solid var(--main); }
-        .btn-publish { width: 100%; padding: 15px; background: var(--main); border: none; color: white; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 12px; margin-top: 20px; }
+        .tab-menu { display: flex; flex: 1; justify-content: center; gap: 10px; height: 100%; }
+        .tab-item { flex: 1; max-width: 80px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--gray); cursor: pointer; position: relative; transition: 0.3s; }
+        .tab-item:hover { background: #252525; border-radius: 8px; color: #fff; }
+        .tab-item.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        .badge { position: absolute; top: 10px; right: 15px; background: #e41e3f; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; display: none; }
+
+        /* MAIN UI */
+        .view-section { display: none; padding: 20px; max-width: 900px; margin: 0 auto; animation: fadeUp 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeUp { from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+
+        .form-card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .form-row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .form-col { flex: 1; min-width: 250px; }
         
-        .item-card { background:#222; padding:12px; border-radius:10px; margin-bottom:10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .req-card { background:#1e1e1e; padding:15px; border-radius:12px; margin-bottom:10px; border-left: 5px solid #ffd700; }
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-label { font-size: 12px; color: var(--gray); margin-bottom: 8px; display: block; font-weight: 600; text-transform: uppercase; }
+        .form-input, .form-textarea, .form-select { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 10px; color: #fff; font-size: 14px; box-sizing: border-box; }
+        .form-input:focus { border-color: var(--primary); outline: none; }
+        .form-input[readonly] { background: #1a1a1a; color: var(--primary); font-weight: bold; border-color: #333; cursor: not-allowed; }
+
+        .poster-preview-box { width: 160px; height: 240px; background: #111; border: 2px dashed #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: sticky; top: 80px; }
+        .poster-preview-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .poster-placeholder { color: #555; font-size: 12px; text-align: center; padding: 10px; }
+
+        .search-bar { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 50px; margin-bottom: 20px; text-align: center; }
+        .movie-list-container { display: grid; gap: 10px; }
+        .movie-item { background: #252525; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 15px; border: 1px solid #333; }
+        .movie-thumb { width: 50px; height: 70px; border-radius: 5px; object-fit: cover; background: #000; }
+        .movie-info { flex: 1; }
+        .movie-info h4 { margin: 0; font-size: 15px; color: #fff; }
+        .movie-info span { font-size: 11px; color: var(--gray); background: #111; padding: 2px 6px; border-radius: 4px; margin-right: 5px; }
+        .action-btns { display: flex; gap: 8px; }
+        .btn-icon { width: 35px; height: 35px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btn-edit { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+        .btn-del { background: rgba(255, 77, 77, 0.2); color: #ff4d4d; }
+
+        .btn-action { width: 100%; padding: 14px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 15px; background: linear-gradient(135deg, #e50914, #ff4b2b); color: #fff; }
+        .episode-row { display: flex; gap: 10px; align-items: center; background: #222; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; }
         
-        #adminContent { display: none; }
+        /* POPUP */
+        #customPopup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; }
+        .popup-box { background: #1a1a1a; width: 320px; padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #333; transform: scale(0.9); animation: fadeUp 0.3s forwards; }
+
+        /* --- NOTIFICATION TOAST --- */
+        .notify-toast {
+            position: fixed; top: 80px; right: -300px; /* Hidden initially */
+            background: #222; color: #fff; padding: 15px 20px;
+            border-left: 5px solid var(--primary);
+            border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            display: flex; align-items: center; gap: 15px; z-index: 10000;
+            transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 250px;
+        }
+        .notify-toast.show { right: 20px; }
+        .notify-icon { color: var(--primary); font-size: 20px; }
+        .notify-text h4 { margin: 0; font-size: 14px; }
+        .notify-text p { margin: 2px 0 0 0; font-size: 11px; color: #aaa; }
     </style>
 </head>
 <body>
-
     <div id="loginOverlay">
         <div class="login-box">
-            <h2 style="color: var(--main);">PRITAM STUDIO</h2>
-            <input type="text" id="adminUser" placeholder="Username" style="margin-bottom: 10px;">
-            <input type="password" id="adminPass" placeholder="Password">
-            <button class="btn-publish" onclick="checkLogin()">LOGIN</button>
+            <h2 style="color:var(--primary); margin-bottom: 20px;">ADMIN LOGIN</h2>
+            <input type="text" id="adminUser" class="login-input" placeholder="Username">
+            <input type="password" id="adminPass" class="login-input" placeholder="Password">
+            <button class="login-btn" onclick="checkLogin()">ENTER PANEL</button>
+            <p id="loginError" style="color:red; font-size:12px; display:none; margin-top:10px;">Invalid Credentials!</p>
         </div>
     </div>
-
-    <div id="adminContent">
-        <div class="stats-bar">
-            <div class="stat-item"><b id="totalCount">0</b><span>Movies</span></div>
-            <div class="stat-item"><b id="onlineCount" style="color: #00ff00;">0</b><span>Live</span></div>
-            <div class="stat-item" onclick="logout()" style="cursor:pointer;"><b style="color:var(--delete)">➔</b><span>Logout</span></div>
+<div class="header-nav" style="display:none;" id="mainNav">
+        <div class="brand"><i class="fa-solid fa-film"></i> HUB</div>
+        <div class="tab-menu">
+            <div class="tab-item active" onclick="switchTab('dashboard', this)"><i class="fa-solid fa-house"></i></div>
+            <div class="tab-item" onclick="switchTab('movie-list', this)"><i class="fa-solid fa-list"></i></div>
+            <div class="tab-item" onclick="switchTab('add-content', this)"><i class="fa-solid fa-circle-plus"></i></div>
+            <div class="tab-item" onclick="switchTab('requests', this)"><i class="fa-solid fa-envelope"></i><span class="badge" id="reqCount">0</span></div>
+            <div class="tab-item" onclick="switchTab('reports', this)"><i class="fa-solid fa-triangle-exclamation"></i><span class="badge" id="repCount">0</span></div>
         </div>
-
-        <div class="menu-tabs">
-            <div id="tabAdd" class="tab active" onclick="showTab('add')">➕ Add</div>
-            <div id="tabManage" class="tab" onclick="showTab('manage')">📂 List</div>
-            <div id="tabReq" class="tab" onclick="showTab('req')">💬 Req</div>
-        </div>
-
-        <div id="addSection" class="app-container">
-            <h2 id="formTitle" style="text-align: center; color: var(--main);">Upload</h2>
-            <div class="input-group"><label>Movie ID</label><input type="text" id="mId" placeholder="m14"></div>
-            <div class="input-group"><label>Title</label><input type="text" id="title"></div>
-            <div class="input-group">
-                <label>Poster URL</label><input type="text" id="img" oninput="previewImage(this.value)">
-                <img id="imgPreview" src="">
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <div style="flex:1" class="input-group"><label>Res</label><input type="text" id="res"></div>
-                <div style="flex:1" class="input-group"><label>Lang</label><input type="text" id="lang"></div>
-            </div>
-            <div class="input-group"><label>Description</label><textarea id="desc" rows="2"></textarea></div>
-
-            <div id="episodeContainer"></div>
-            <button onclick="addEpisodeField()" style="width:100%; padding:8px; background:#ffd700; border:none; border-radius:5px; font-weight:bold; margin-top:10px;">+ Add Link</button>
-            <button class="btn-publish" id="submitBtn" onclick="uploadMovie()">🚀 পাবলিশ করুন</button>
-            <button style="width:100%; margin-top:10px; background:#444; color:white; border:none; padding:10px; border-radius:10px;" onclick="clearForm()">🧹 রিসেট ফর্ম</button>
-        </div>
-
-        <div id="manageSection" class="app-container" style="display:none;">
-            <input type="text" id="searchBar" placeholder="Search..." onkeyup="filterMovies()" style="margin-bottom:15px; border:1px solid #ffd700;">
-            <div id="movieList"></div>
-        </div>
-
-        <div id="reqSection" class="app-container" style="display:none;">
-            <h2 style="text-align: center; color: #ffd700;">User Requests</h2>
-            <div id="reqList"></div>
-        </div>
+        <div style="width:50px;"></div>
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI",
-            authDomain: "pritam-ott.firebaseapp.com",
-            databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com",
-            projectId: "pritam-ott",
-            storageBucket: "pritam-ott.firebasestorage.app",
-            messagingSenderId: "8916733532",
-            appId: "1:8916733532:web:8b1143a7352770ff7e6099"
-        };
+    <div id="mainContainer" style="display:none;">
+        <div id="dashboard" class="view-section active">
+            <h2>Welcome Back!</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+                <div class="form-card" style="text-align:center;"><h1 style="margin:0; color:var(--primary);" id="totalMov">0</h1><small style="color:var(--gray);">Total Movies</small></div>
+                <div class="form-card" style="text-align:center;"><h1 style="margin:0; color:var(--primary);" id="totalReq">0</h1><small style="color:var(--gray);">Pending Requests</small></div>
+            </div>
+            <div class="form-card">
+                <label class="form-label">Site Notice</label>
+                <input type="text" id="marqueeTxt" class="form-input" placeholder="Update notice...">
+                <button class="btn-action" style="margin-top:10px; padding:10px;" onclick="updateNotice()">Update</button>
+            </div>
+        </div>
+
+        <div id="movie-list" class="view-section">
+            <input type="text" id="searchBox" class="search-bar" placeholder="🔍 Search movies..." onkeyup="filterMovies()">
+            <div id="allMoviesContainer" class="movie-list-container"><p style="text-align:center; color:#555;">Loading movies...</p></div>
+        </div>
+
+        <div id="add-content" class="view-section">
+            <div class="form-card">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div style="background:#252525; padding:5px; border-radius:8px; margin-bottom:15px; display:flex;">
+                            <button id="btnMov" class="btn-action" style="margin:0; flex:1; background:var(--primary);" onclick="setType('movie')">Movie</button>
+                            <button id="btnSer" class="btn-action" style="margin:0; flex:1; background:transparent; color:#aaa;" onclick="setType('series')">Web Series</button>
+                        </div>
+                        <div class="form-group"><label class="form-label">Auto ID</label><input type="text" id="mCustomId" class="form-input" readonly placeholder="Auto ID"></div>
+                        <div class="form-group"><label class="form-label">Title</label><input type="text" id="mTitle" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Poster URL</label><input type="text" id="mPoster" class="form-input" oninput="updatePreview()"></div>
+
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1;"><label class="form-label">Quality</label>
+                                <select id="mRes" class="form-select">
+                                    <option>480p [SD]</option><option selected>720p [HD]</option><option>1080p [FHD]</option><option>HD-Rip</option><option>WEB-DL</option><option>4K [UHD]</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex:1;"><label class="form-label">Category</label>
+                                <select id="mGenre" class="form-select">
+                                    <option>Action</option><option>Comedy</option><option>Horror</option><option>Drama</option><option>Sci-Fi</option><option>Bangla</option><option>Thriller</option><option>Adventure</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Language</label>
+                            <select id="mLang" class="form-select">
+                                <option>Bengali</option><option>Hindi</option><option>English</option><option>Hindi Dubbed</option><option selected>Dual Audio [Hin-Eng]</option><option>Multi Audio</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="width:160px; display:flex; justify-content:center;">
+                        <div class="poster-preview-box"><span class="poster-placeholder">Poster Preview</span><img id="previewImg" src=""></div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:10px;"><label class="form-label">Links / Episodes</label>
+                    <div id="episodeContainer"></div>
+                    <button id="addEpBtn" class="btn-action" style="background:#333; font-size:12px; margin-top:10px; display:none;" onclick="addEpisodeInput()">+ Add Episode</button>
+                </div>
+                <div class="form-group"><label class="form-label">Description</label><textarea id="mDesc" class="form-textarea" rows="2"></textarea></div>
+
+                <input type="hidden" id="editId">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-action" id="submitBtn" onclick="uploadData()" style="flex:2;">PUBLISH NOW</button>
+                    <button class="btn-action" style="flex:1; background:#333;" onclick="resetForm()">RESET</button>
+                </div>
+                <button class="btn-action" id="cancelEditBtn" style="background:#333; display:none;" onclick="resetForm()">Cancel Edit</button>
+            </div>
+        </div>
+
+        <div id="requests" class="view-section"><h3 style="color:#aaa;">Requests</h3><div id="reqList">Loading...</div></div>
+        <div id="reports" class="view-section"><h3 style="color:#ff4d4d;">Reports</h3><div id="repList">Loading...</div></div>
+    </div>
+
+    <div id="customPopup"><div class="popup-box"><div style="font-size:40px; margin-bottom:10px;" id="popIcon">✅</div><h3 id="popTitle" style="margin:0; color:white;">Success</h3><p id="popMsg" style="color:#aaa; font-size:13px;">Done.</p><button class="btn-action" style="margin-top:15px; padding:10px;" onclick="document.getElementById('customPopup').style.display='none'">OK</button></div></div>
+
+    <div id="notifyToast" class="notify-toast">
+        <div class="notify-icon"><i class="fa-solid fa-bell"></i></div>
+        <div class="notify-text"><h4 id="notifyTitle">Notification</h4><p id="notifyBody">Message here...</p></div>
+    </div>
+<script>
+        const firebaseConfig = { apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI", authDomain: "pritam-ott.firebaseapp.com", databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com", projectId: "pritam-ott", storageBucket: "pritam-ott.firebasestorage.app", messagingSenderId: "8916733532", appId: "1:8916733532:web:8b1143a7352770ff7e6099" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        let currentType = 'movie', allMoviesData = [];
+        let lastReqCount = -1, lastRepCount = -1; // Variables for Notification Tracking
+
         function checkLogin() {
-            const user = document.getElementById('adminUser').value;
-            const pass = document.getElementById('adminPass').value;
-            if(user === "pritam" && pass === "2026") {
+            const u = document.getElementById('adminUser').value, p = document.getElementById('adminPass').value;
+            if(u === "pritom" && p === "2026") {
                 document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('adminContent').style.display = 'block';
-                sessionStorage.setItem("isAdmin", "true");
-                loadMovies(); trackTraffic(); loadRequests();
-            } else { alert("Wrong!"); }
+                document.getElementById('mainNav').style.display = 'flex';
+                document.getElementById('mainContainer').style.display = 'block';
+                initApp();
+            } else { document.getElementById('loginError').style.display = 'block'; }
         }
 
-        if(sessionStorage.getItem("isAdmin") === "true") {
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('adminContent').style.display = 'block';
-            loadMovies(); trackTraffic(); loadRequests();
+        function initApp() { setType('movie'); loadMovies(); loadRequests(); loadReports(); }
+        function switchTab(id, el) {
+            document.querySelectorAll('.view-section').forEach(d => d.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            if(id === 'add-content' && !document.getElementById('editId').value) generateNextId();
         }
 
-        function logout() { sessionStorage.clear(); location.reload(); }
-
-        function showTab(type) {
-            document.getElementById('addSection').style.display = type === 'add' ? 'block' : 'none';
-            document.getElementById('manageSection').style.display = type === 'manage' ? 'block' : 'none';
-            document.getElementById('reqSection').style.display = type === 'req' ? 'block' : 'none';
-            
-            document.getElementById('tabAdd').className = type === 'add' ? 'tab active' : 'tab';
-            document.getElementById('tabManage').className = type === 'manage' ? 'tab active' : 'tab';
-            document.getElementById('tabReq').className = type === 'req' ? 'tab active' : 'tab';
+        function setType(type) {
+            currentType = type;
+            document.getElementById('btnMov').style.background = type === 'movie' ? 'var(--primary)' : 'transparent';
+            document.getElementById('btnMov').style.color = type === 'movie' ? '#fff' : '#aaa';
+            document.getElementById('btnSer').style.background = type === 'series' ? 'var(--primary)' : 'transparent';
+            document.getElementById('btnSer').style.color = type === 'series' ? '#fff' : '#aaa';
+            const cont = document.getElementById('episodeContainer'), btn = document.getElementById('addEpBtn');
+            cont.innerHTML = "";
+            if(type === 'movie') { btn.style.display = 'none'; addEpisodeInput(true); } else { btn.style.display = 'block'; addEpisodeInput(false); }
         }
 
-        function loadRequests() {
-            db.ref('requests').on('value', (snap) => {
-                const list = document.getElementById('reqList');
-                list.innerHTML = "";
-                snap.forEach(child => {
-                    const r = child.val();
-                    const id = child.key;
-                    const div = document.createElement('div');
-                    div.className = 'req-card';
-                    div.innerHTML = `
-                        <div style="font-weight:bold; color:#ffd700;">${r.movieName}</div>
-                        <div style="font-size:12px; color:#aaa; margin-top:5px;">User: ${r.userName || 'Anonymous'}</div>
-                        <button onclick="deleteReq('${id}')" style="margin-top:10px; background:red; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">ডিলিট</button>
-                    `;
-                    list.appendChild(div);
-                });
-            });
-        }
-
-        function deleteReq(id) { if(confirm("ডিলিট করবেন?")) db.ref('requests/' + id).remove(); }
-
-        function trackTraffic() {
-            db.ref('status').on('value', (snap) => {
-                let count = 0;
-                if(snap.exists()) {
-                    const data = snap.val();
-                    for(let key in data) if(data[key].state === 'online') count++;
-                }
-                document.getElementById('onlineCount').innerText = count;
-            });
-        }
-
-        function previewImage(url) {
-            const img = document.getElementById('imgPreview');
-            if(url && url.length > 10) { img.src = url; img.style.display = 'block'; }
-            else { img.style.display = 'none'; }
-        }
-
-        function addEpisodeField(name='', watch='', dl='') {
+        function addEpisodeInput(isMovie = false, data = {}) {
+            const cont = document.getElementById('episodeContainer'), count = cont.children.length + 1;
+            const nameVal = data.name || (isMovie ? "Full Movie" : `Episode ${count}`);
             const div = document.createElement('div');
-            div.style = "background:#2a2a2a; padding:10px; margin-bottom:10px; border-radius:8px; position:relative; border-left:4px solid var(--main);";
-            div.innerHTML = `<button onclick="this.parentElement.remove()" style="position:absolute; right:5px; top:5px; color:red; border:none; background:none;">✕</button>
-                <input type="text" class="ep-name" placeholder="Name" value="${name}" style="margin-bottom:5px">
-                <input type="text" class="ep-watch" placeholder="Watch" value="${watch}" style="margin-bottom:5px">
-                <input type="text" class="ep-dl" placeholder="Download" value="${dl}">`;
-            document.getElementById('episodeContainer').appendChild(div);
+            div.className = 'episode-row';
+            div.innerHTML = `<div style="flex:1;"><input type="text" class="form-input ep-name" value="${nameVal}" style="margin-bottom:5px; padding:8px; font-size:12px; font-weight:bold;"><div style="display:flex; gap:5px;"><input type="text" class="form-input ep-watch" value="${data.watch||''}" placeholder="Stream Link" style="padding:8px;"><input type="text" class="form-input ep-dl" value="${data.dl||''}" placeholder="Download Link" style="padding:8px;"></div></div>${!isMovie ? `<button class="btn-icon btn-del" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>` : ''}`;
+            cont.appendChild(div);
         }
 
-        function uploadMovie() {
-            const id = document.getElementById('mId').value;
-            if(!id) return alert("ID?");
+        function updatePreview() {
+            const url = document.getElementById('mPoster').value, img = document.getElementById('previewImg'), ph = document.querySelector('.poster-placeholder');
+            if(url) { img.src = url; img.style.display = 'block'; ph.style.display = 'none'; } else { img.style.display = 'none'; ph.style.display = 'block'; }
+        }
+
+        function generateNextId() {
+            let maxId = 0;
+            allMoviesData.forEach(m => { if(m.customId && m.customId.startsWith('m')) { const num = parseInt(m.customId.substring(1)); if(!isNaN(num) && num > maxId) maxId = num; } });
+            if (maxId === 0 && allMoviesData.length > 0) maxId = allMoviesData.length;
+            document.getElementById('mCustomId').value = 'm' + (maxId + 1);
+        }
+
+        function uploadData() {
+            const id = document.getElementById('editId').value;
+            const title = document.getElementById('mTitle').value, poster = document.getElementById('mPoster').value;
+            if(!title || !poster) return showPopup("Error", "Title & Poster needed!", "❌");
+
             let seasons = [];
-            document.querySelectorAll('#episodeContainer > div').forEach(el => {
-                seasons.push({ name: el.querySelector('.ep-name').value, watch: el.querySelector('.ep-watch').value, dl: el.querySelector('.ep-dl').value });
+            document.querySelectorAll('.episode-row').forEach(row => {
+                seasons.push({ name: row.querySelector('.ep-name').value, watch: row.querySelector('.ep-watch').value, dl: row.querySelector('.ep-dl').value });
             });
-            const data = {
-                title: document.getElementById('title').value,
-                img: document.getElementById('img').value,
-                res: document.getElementById('res').value,
-                lang: document.getElementById('lang').value,
-                desc: document.getElementById('desc').value,
-                uploadTime: firebase.database.ServerValue.TIMESTAMP, 
-                seasons: seasons
-        };
-            db.ref('movies/' + id).set(data).then(() => {
-    // ইনবিল্ট সুন্দর এনিমেটেড পপআপ
-    const doneMsg = document.createElement('div');
-    doneMsg.innerHTML = "✅ মুভিটি সফলভাবে পাবলিশ হয়েছে!";
-    doneMsg.style.cssText = `
-        position: fixed; 
-        top: 20px; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        background: #ffd700; 
-        color: #000; 
-        padding: 15px 30px; 
-        border-radius: 50px; 
-        z-index: 9999; 
-        font-weight: bold; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        transition: all 0.5s ease;
-        border: 2px solid #fff;
-    `;
-    document.body.appendChild(doneMsg);
-    
-    // ৩.৫ সেকেন্ড পর পেজ রিলোড হবে (যাতে ইউজার মেসেজটি পড়তে পারে)
-    setTimeout(() => { 
-        doneMsg.style.opacity = '0';
-        doneMsg.style.top = '0px';
-        setTimeout(() => { location.reload(); }, 500); 
-    }, 3000); 
-}).catch((error) => {
-    alert("দুঃখিত, এরর: " + error.message);
-});
-            
+
+            const data = { title: title, img: poster, res: document.getElementById('mRes').value, genre: document.getElementById('mGenre').value, desc: document.getElementById('mDesc').value, lang: document.getElementById('mLang').value, customId: document.getElementById('mCustomId').value, uploadTime: new Date().toISOString(), seasons: seasons, type: currentType };
+
+            const action = id ? db.ref('movies/' + id).update(data) : db.ref('movies').push(data);
+            action.then(() => {
+                setTimeout(() => { showPopup("সফল!", "মুভি আপলোড করা সফল হয়েছে", "✅"); resetForm(); }, 1000);
+            });
         }
 
         function loadMovies() {
-            db.ref('movies').on('value', (snap) => {
-                const list = document.getElementById('movieList');
-                list.innerHTML = ""; let count = 0;
-                snap.forEach(child => {
-                    count++; const m = child.val(); const id = child.key;
-                    const div = document.createElement('div');
-                    div.className = 'item-card';
-                    div.innerHTML = `<div><b>${id}</b>: ${m.title}</div>
-                        <div><button onclick="editMovie('${id}')" style="background:var(--edit); border:none; color:white; padding:5px; border-radius:5px;">Edit</button>
-                        <button onclick="deleteMovie('${id}')" style="background:var(--delete); border:none; color:white; padding:5px; border-radius:5px;">Del</button></div>`;
-                    list.appendChild(div);
-                });
-                document.getElementById('totalCount').innerText = count;
+            db.ref('movies').on('value', snap => {
+                allMoviesData = [];
+                const list = document.getElementById('allMoviesContainer');
+                list.innerHTML = "";
+                snap.forEach(c => { const m = c.val(); m.key = c.key; allMoviesData.push(m); });
+                renderMovieList(allMoviesData);
+                document.getElementById('totalMov').innerText = allMoviesData.length;
+                if(document.getElementById('add-content').classList.contains('active') && !document.getElementById('editId').value) generateNextId();
             });
         }
 
-        function editMovie(id) {
-            db.ref('movies/' + id).once('value', (snap) => {
-                const m = snap.val();
-                document.getElementById('mId').value = id; document.getElementById('mId').readOnly = true;
-                document.getElementById('title').value = m.title; document.getElementById('img').value = m.img;
-                previewImage(m.img); document.getElementById('res').value = m.res;
-                document.getElementById('lang').value = m.lang; document.getElementById('desc').value = m.desc;
-                document.getElementById('episodeContainer').innerHTML = "";
-                m.seasons.forEach(s => addEpisodeField(s.name, s.watch, s.dl));
-                showTab('add');
+        function renderMovieList(data) {
+            const list = document.getElementById('allMoviesContainer');
+            list.innerHTML = "";
+            [...data].reverse().forEach(m => {
+                list.innerHTML += `<div class="movie-item"><img src="${m.img}" class="movie-thumb"><div class="movie-info"><h4>${m.title}</h4><span>${m.customId || 'Old'}</span><span>${m.res}</span></div><div class="action-btns"><button class="btn-icon btn-edit" onclick="editMovie('${m.key}')"><i class="fa-solid fa-pen"></i></button><button class="btn-icon btn-del" onclick="deleteMovie('${m.key}')"><i class="fa-solid fa-trash"></i></button></div></div>`;
             });
         }
-
-        function deleteMovie(id) { if(confirm("Delete?")) db.ref('movies/' + id).remove(); }
 
         function filterMovies() {
-            let q = document.getElementById('searchBar').value.toUpperCase();
-            document.querySelectorAll('.item-card').forEach(el => {
-                el.style.display = el.innerText.toUpperCase().includes(q) ? "" : "none";
+            const q = document.getElementById('searchBox').value.toLowerCase();
+            renderMovieList(allMoviesData.filter(m => m.title.toLowerCase().includes(q) || (m.customId && m.customId.toLowerCase().includes(q))));
+        }
+
+        function editMovie(key) {
+            const m = allMoviesData.find(x => x.key === key);
+            if(!m) return;
+            document.getElementById('editId').value = key;
+            document.getElementById('mTitle').value = m.title;
+            document.getElementById('mPoster').value = m.img;
+            document.getElementById('mRes').value = m.res;
+            document.getElementById('mGenre').value = m.genre;
+            document.getElementById('mDesc').value = m.desc;
+            document.getElementById('mLang').value = m.lang || 'Dual Audio [Hin-Eng]';
+            document.getElementById('mCustomId').value = m.customId || '';
+            updatePreview(); setType(m.type || 'movie');
+            const cont = document.getElementById('episodeContainer'); cont.innerHTML = "";
+            if(m.seasons) m.seasons.forEach(s => addEpisodeInput(m.type === 'movie', s));
+            switchTab('add-content', document.querySelector('.tab-item:nth-child(3)'));
+            document.getElementById('submitBtn').innerText = "UPDATE CONTENT";
+            document.getElementById('cancelEditBtn').style.display = "block";
+        }
+
+        function deleteMovie(key) { if(confirm("Delete this movie?")) db.ref('movies/' + key).remove(); }
+
+        function resetForm() {
+            document.getElementById('editId').value = "";
+            document.getElementById('mTitle').value = "";
+            document.getElementById('mPoster').value = "";
+            document.getElementById('mDesc').value = "";
+            document.getElementById('previewImg').style.display = 'none';
+            document.querySelector('.poster-placeholder').style.display = 'block';
+            document.getElementById('submitBtn').innerText = "PUBLISH NOW";
+            document.getElementById('cancelEditBtn').style.display = "none";
+            generateNextId(); setType('movie');
+        }
+
+        function showPopup(t, m, i) {
+            document.getElementById('popTitle').innerText = t;
+            document.getElementById('popMsg').innerText = m;
+            document.getElementById('popIcon').innerText = i;
+            document.getElementById('customPopup').style.display = 'flex';
+        }
+
+        // --- NOTIFICATION & LIVE DATA ---
+        function showAdminNotify(title, msg) {
+            const toast = document.getElementById('notifyToast');
+            document.getElementById('notifyTitle').innerText = title;
+            document.getElementById('notifyBody').innerText = msg;
+            toast.classList.add('show');
+            
+            // Play Sound (Beep)
+            const audio = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+            audio.play().catch(e => console.log('Audio permission needed'));
+
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+        
+        function loadRequests() {
+            db.ref('requests').on('value', s => {
+                const count = s.numChildren();
+                
+                // NOTIFICATION TRIGGER
+                if(lastReqCount !== -1 && count > lastReqCount) {
+                    showAdminNotify("🔔 New Request!", "Someone requested a movie.");
+                }
+                lastReqCount = count;
+
+                const d = document.getElementById('reqList'), b = document.getElementById('reqCount');
+                b.innerText = count; b.style.display = count > 0 ? 'block' : 'none';
+                document.getElementById('totalReq').innerText = count;
+                d.innerHTML = "";
+                s.forEach(c => { const r = c.val(); d.innerHTML += `<div class="req-item" style="border-left:4px solid var(--primary);"><div class="req-info"><h4>${r.movieName}</h4><span>${r.userName} | ${r.time}</span></div><button class="btn-icon btn-del" onclick="db.ref('requests/${c.key}').remove()"><i class="fa-solid fa-check"></i></button></div>`; });
             });
         }
 
-        function clearForm() { location.reload(); }
-        window.onload = () => { if(sessionStorage.getItem("isAdmin") !== "true") addEpisodeField(); };
+        function loadReports() {
+            db.ref('reports').on('value', s => {
+                const count = s.numChildren();
+
+                // NOTIFICATION TRIGGER
+                if(lastRepCount !== -1 && count > lastRepCount) {
+                    showAdminNotify("⚠️ Broken Link!", "A user reported a link issue.");
+                }
+                lastRepCount = count;
+
+                const d = document.getElementById('repList'), b = document.getElementById('repCount');
+                b.innerText = count; b.style.display = count > 0 ? 'block' : 'none';
+                d.innerHTML = "";
+                s.forEach(c => { const r = c.val(); d.innerHTML += `<div class="req-item" style="border-left:4px solid #ff4d4d;"><div class="req-info"><h4>${r.movie}</h4><span>Broken Link</span></div><button class="btn-icon btn-del" onclick="db.ref('reports/${c.key}').remove()"><i class="fa-solid fa-check"></i></button></div>`; });
+            });
+        }
+
+        function updateNotice() { db.ref('notice').set(document.getElementById('marqueeTxt').value); showPopup("Done", "Notice Updated", "✅"); }
     </script>
 </body>
 </html>
+
