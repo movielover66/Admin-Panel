@@ -3,559 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Premium Hub</title>
+    <title>🚀 ULTRA ADMIN PRO (MAX CONTROL)</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Hind+Siliguri:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
     <style>
-        /* PROFESSIONAL THEME VARIABLES */
-        :root { 
-            --primary: #f43f5e; /* Modern Rose/Red */
-            --primary-hover: #e11d48;
-            --bg: #0f172a; /* Deep Slate (Professional Dark) */
-            --card: #1e293b; /* Lighter Slate */
-            --border: #334155;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --nav-bg: rgba(30, 41, 59, 0.95);
-        }
-        
-        body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: 'Inter', 'Hind Siliguri', sans-serif; overflow-x: hidden; padding-top: 70px; }
-        * { box-sizing: border-box; outline: none; }
+        :root { --bg: #050505; --glass: #111; --border: #222; --neon: #ff003c; --accent: #00f3ff; --text: #fff; --gold: #ffd700; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Hind Siliguri', sans-serif; margin: 0; overflow-x: hidden; }
+        * { box-sizing: border-box; }
 
-        /* LOGIN */
-        #loginOverlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; backdrop-filter: blur(5px); }
-        .login-box { background: var(--card); padding: 40px; border-radius: 12px; text-align: center; border: 1px solid var(--border); width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .login-input { width: 100%; padding: 12px; margin: 10px 0; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: white; font-size: 14px; transition: 0.3s; }
-        .login-input:focus { border-color: var(--primary); }
-        .login-btn { width: 100%; padding: 12px; background: var(--primary); border: none; color: white; font-weight: 600; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .login-btn:hover { background: var(--primary-hover); }
+        /* SIDEBAR FIXED */
+        .sidebar { position: fixed; width: 260px; height: 100%; background: #000; border-right: 1px solid var(--border); padding: 20px; z-index: 1000; transition: 0.3s; }
+        .logo { font-size: 22px; font-weight: 800; margin-bottom: 30px; display: block; color: var(--text); }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 15px; margin-bottom: 8px; border-radius: 12px; color: #888; cursor: pointer; transition: 0.3s; }
+        .nav-item.active, .nav-item:hover { background: #1a1a1a; color: white; border-left: 4px solid var(--accent); }
+        .badge { background: var(--neon); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; margin-left: auto; }
 
-        /* PROFESSIONAL NAV */
-        .header-nav { 
-            position: fixed; top: 0; width: 100%; height: 60px; 
-            background: var(--nav-bg); border-bottom: 1px solid var(--border); z-index: 1000; 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 20px; backdrop-filter: blur(10px);
-        }
-        .brand { font-size: 18px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px; }
-        .brand i { color: var(--primary); }
+        /* MAIN CONTENT AREA */
+        .main-content { margin-left: 260px; padding: 30px; min-height: 100vh; }
+        .glass-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
         
-        .tab-menu { display: flex; flex: 1; justify-content: center; gap: 10px; height: 100%; }
-        .tab-item { 
-            font-size: 18px; color: var(--text-muted); cursor: pointer; position: relative; 
-            transition: 0.3s; padding: 0 15px; display: flex; align-items: center; 
-            height: 100%; border-bottom: 3px solid transparent;
-        }
-        .tab-item:hover { color: var(--text); background: rgba(255,255,255,0.02); }
-        .tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .badge { position: absolute; top: 12px; right: 5px; background: var(--primary); color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 10px; font-weight: bold; display: none; }
+        input, select, textarea { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; outline: none; }
+        label { font-size: 11px; color: #888; font-weight: bold; margin-bottom: 5px; display: block; }
 
-        /* LAYOUT & FORM */
-        .view-section { display: none; padding: 20px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.4s ease; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+        /* INBUILT MODAL */
+        #customPopup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; }
+        .popup-box { background: #111; padding: 25px; border-radius: 15px; border: 1px solid var(--accent); text-align: center; width: 300px; box-shadow: 0 0 30px rgba(0,243,255,0.2); }
+        
+        .item-card { background: #0a0a0a; padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border: 1px solid #222; }
+        .list-img { width: 45px; height: 65px; border-radius: 6px; object-fit: cover; }
 
-        .form-card { 
-            background: var(--card); padding: 30px; border-radius: 12px; 
-            border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-            margin-bottom: 20px; 
-        }
-        .form-row { display: flex; gap: 20px; flex-wrap: wrap; }
-        .form-col { flex: 1; min-width: 250px; }
-        
-        .form-group { margin-bottom: 20px; position: relative; }
-        .form-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* PROFESSIONAL INPUTS (Rectangular) */
-        .form-input, .form-textarea, .form-select { 
-            width: 100%; padding: 12px 15px; background: #0f172a; 
-            border: 1px solid var(--border); border-radius: 6px; 
-            color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-        .form-input:focus, .form-textarea:focus, .form-select:focus { 
-            border-color: var(--primary); box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2); 
-        }
-        .form-input[readonly] { background: rgba(15, 23, 42, 0.5); border-color: var(--border); color: var(--text-muted); cursor: not-allowed; }
+        .btn-neon { background: var(--neon); color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .edit-btn { color: var(--accent); cursor: pointer; font-size: 20px; border: none; background: none; }
+        .del-btn { color: var(--neon); cursor: pointer; font-size: 20px; border: none; background: none; }
 
-        /* SEASON DIGIT BOXES */
-        .digit-select { 
-            width: 60px; text-align: center; font-weight: bold; font-size: 18px; 
-            background: #0f172a; border: 1px solid var(--border); 
-            border-radius: 6px; color: var(--primary); padding: 10px; 
-            cursor: pointer; appearance: none; 
-        }
-        .digit-select:focus { border-color: var(--primary); }
+        .mobile-toggle { display: none; position: fixed; top: 15px; right: 15px; z-index: 2000; background: var(--neon); color: #fff; border: none; padding: 10px; border-radius: 8px; }
 
-        /* POSTER PREVIEW */
-        .poster-preview-box { 
-            width: 150px; height: 225px; background: #0f172a; 
-            border: 2px dashed var(--border); border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; position: sticky; top: 80px; 
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 15px; }
+            .mobile-toggle { display: block; }
         }
-        .poster-preview-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .poster-placeholder { color: var(--text-muted); font-size: 12px; text-align: center; padding: 10px; }
-
-        /* SEARCH BAR (Fixed & Smaller) */
-        .search-container-fixed { 
-            position: sticky; top: 60px; background: var(--bg); 
-            padding: 15px 0; z-index: 50; margin-bottom: 10px; text-align: center; 
-            border-bottom: 1px solid var(--border); backdrop-filter: blur(5px);
-        }
-        .search-bar { 
-            width: 100%; max-width: 400px; /* SMALLER SIZE */
-            padding: 10px 15px; background: var(--card); 
-            border: 1px solid var(--border); color: var(--text); 
-            border-radius: 6px; text-align: left; font-size: 14px; 
-            transition: 0.3s;
-        }
-        .search-bar:focus { border-color: var(--primary); width: 100%; max-width: 420px; }
-        
-        /* PASTE BTN */
-        .input-group { position: relative; display: flex; align-items: center; width: 100%; }
-        .input-group input, .input-group textarea { width: 100%; padding-right: 40px; } 
-        .paste-btn { 
-            position: absolute; right: 5px; top: 50%; transform: translateY(-50%); 
-            background: transparent; border: none; color: var(--text-muted); 
-            cursor: pointer; font-size: 16px; padding: 5px; border-radius: 4px; transition: 0.2s; 
-        }
-        .paste-btn:hover { color: var(--primary); background: rgba(255,255,255,0.05); }
-
-        /* LIST ITEMS */
-        .movie-list-container { display: grid; gap: 10px; padding-bottom: 50px; }
-        .movie-item { 
-            background: var(--card); padding: 10px; border-radius: 8px; 
-            display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); 
-            transition: 0.2s;
-        }
-        .movie-item:hover { border-color: var(--text-muted); }
-        .movie-thumb { width: 40px; height: 60px; border-radius: 4px; object-fit: cover; background: #000; }
-        .movie-info { flex: 1; }
-        .movie-info h4 { margin: 0; font-size: 14px; color: var(--text); font-weight: 600; }
-        .movie-info span { font-size: 11px; color: var(--text-muted); background: #0f172a; padding: 2px 6px; border-radius: 4px; margin-right: 5px; border: 1px solid var(--border); }
-        
-        .action-btns { display: flex; gap: 5px; }
-        .btn-icon { width: 32px; height: 32px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: 0.2s; }
-        .btn-edit { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
-        .btn-edit:hover { background: #3b82f6; color: white; }
-        .btn-del { background: rgba(244, 63, 94, 0.1); color: var(--primary); border: 1px solid rgba(244, 63, 94, 0.2); }
-        .btn-del:hover { background: var(--primary); color: white; }
-
-        /* BUTTONS */
-        .btn-action { 
-            width: 100%; padding: 12px; border-radius: 6px; border: none; 
-            font-weight: 600; cursor: pointer; font-size: 14px; margin-top: 15px; 
-            background: var(--primary); color: #fff; transition: 0.3s; 
-        }
-        .btn-action:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        
-        .btn-logout { 
-            width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); 
-            font-weight: 600; cursor: pointer; font-size: 14px; margin-top: 20px; 
-            background: transparent; color: var(--text-muted); display: flex; 
-            align-items: center; justify-content: center; gap: 8px; transition: 0.3s; 
-        }
-        .btn-logout:hover { background: rgba(244, 63, 94, 0.1); color: var(--primary); border-color: var(--primary); }
-
-        /* EPISODE ROW */
-        .episode-block { background: #0f172a; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .episode-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-        .episode-title { color: var(--text); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .quality-row { display: flex; gap: 10px; margin-bottom: 10px; padding: 10px; background: #162032; border-radius: 6px; border: 1px solid var(--border); }
-        .row-flex { display: flex; gap: 10px; margin-bottom: 0; }
-        .sm-input { padding: 8px; background: #0f172a; border: 1px solid var(--border); border-radius: 4px; color: var(--text); width: 100%; font-size: 12px; }
-        
-        /* POPUP & NOTIFY */
-        #customPopup { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .popup-box { background: var(--card); width: 300px; padding: 30px; border-radius: 12px; text-align: center; border: 1px solid var(--border); transform: scale(0.95); animation: fadeIn 0.2s forwards; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        
-        .notify-toast { 
-            position: fixed; top: 70px; right: -320px; background: var(--card); 
-            color: var(--text); padding: 15px 20px; border-left: 4px solid var(--primary); 
-            border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            display: flex; align-items: center; gap: 15px; z-index: 10000; 
-            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 280px; 
-            border: 1px solid var(--border);
-        }
-        .notify-toast.show { right: 20px; }
     </style>
 </head>
 <body>
-    <div id="loginOverlay">
-        <div class="login-box">
-            <h2 style="color:var(--text); margin-bottom: 20px; font-weight:700;">ADMIN PANEL</h2>
-            <input type="text" id="adminUser" class="login-input" placeholder="Username">
-            <input type="password" id="adminPass" class="login-input" placeholder="Password">
-            <button class="login-btn" onclick="checkLogin()">LOGIN</button>
-            <p id="loginError" style="color:var(--primary); font-size:12px; display:none; margin-top:10px;">Invalid Credentials!</p>
-        </div>
-    </div>
-<div class="header-nav" style="display:none;" id="mainNav">
-        <div class="brand"><i class="fa-solid fa-layer-group"></i> MOVIE HUB</div>
-        <div class="tab-menu">
-            <div class="tab-item active" onclick="switchTab('dashboard', this)"><i class="fa-solid fa-grid-2"></i></div>
-            <div class="tab-item" onclick="switchTab('movie-list', this)"><i class="fa-solid fa-list-ul"></i></div>
-            <div class="tab-item" onclick="switchTab('add-content', this)"><i class="fa-solid fa-plus-circle"></i></div>
-            <div class="tab-item" onclick="switchTab('requests', this)"><i class="fa-solid fa-inbox"></i><span class="badge" id="reqCount">0</span></div>
-            <div class="tab-item" onclick="switchTab('reports', this)"><i class="fa-solid fa-triangle-exclamation"></i><span class="badge" id="repCount">0</span></div>
+    <div id="customPopup">
+        <div class="popup-box">
+            <h3 id="popTitle" style="color:var(--accent); margin:0;"></h3>
+            <p id="popMsg" style="font-size:13px; color:#ccc; margin:15px 0;"></p>
+            <button onclick="closePop()" class="btn-neon" style="padding:10px;">বন্ধ করুন</button>
         </div>
     </div>
 
-    <div id="mainContainer" style="display:none;">
-        <div id="dashboard" class="view-section active">
-            <h2 style="font-size:22px; margin-bottom:20px;">Dashboard Overview</h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
-                <div class="form-card" style="text-align:center; padding:20px;"><h1 style="margin:0; color:var(--primary); font-size:36px;" id="totalMov">0</h1><small style="color:var(--text-muted); font-weight:600;">TOTAL MOVIES</small></div>
-                <div class="form-card" style="text-align:center; padding:20px;"><h1 style="margin:0; color:#3b82f6; font-size:36px;" id="totalReq">0</h1><small style="color:var(--text-muted); font-weight:600;">REQUESTS</small></div>
-            </div>
-            
-            <div class="form-card">
-                <label class="form-label">Update Marquee Notice</label>
-                <div class="input-group">
-                    <input type="text" id="marqueeTxt" class="form-input" placeholder="Write notice here...">
-                    <button class="paste-btn" onclick="pasteToInput(this)"><i class="fa-regular fa-clipboard"></i></button>
-                </div>
-                <button class="btn-action" style="margin-top:15px; width:auto; padding:10px 25px;" onclick="updateNotice()">Update Notice</button>
-            </div>
+    <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
 
-            <button class="btn-logout" onclick="logout()">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
-            </button>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">STUDIO <span style="color:var(--accent);">ADMIN</span></div>
+        <div class="nav-item active" id="nav-dash" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i> ড্যাশবোর্ড</div>
+        <div class="nav-item" id="nav-add" onclick="switchTab('addMovie')"><i class="fa-solid fa-cloud-arrow-up"></i> মুভি আপলোড</div>
+        <div class="nav-item" id="nav-list" onclick="switchTab('manageMovies')"><i class="fa-solid fa-database"></i> মুভি লিস্ট</div>
+        <div class="nav-item" id="nav-set" onclick="switchTab('siteControl')"><i class="fa-solid fa-pen-nib"></i> সাইট টেক্সট এডিট</div>
+        <div class="nav-item" id="nav-req" onclick="switchTab('requests')"><i class="fa-solid fa-bell"></i> রিকোয়েস্ট <span id="reqBadge" class="badge">0</span></div>
+    </div>
+
+    <div class="main-content">
+        <div id="dashboard" class="tab-content">
+            <h1>📊 এক নজরে</h1>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div class="glass-panel">মুভি সংখ্যা: <h2 id="totalMovies" style="margin:0;">0</h2></div>
+                <div class="glass-panel">মোট ভিউ: <h2 id="totalViews" style="margin:0; color:var(--accent);">0</h2></div>
+            </div>
         </div>
 
-        <div id="movie-list" class="view-section">
-            <div class="search-container-fixed">
-                <input type="text" id="searchBox" class="search-bar" placeholder="Search by name or ID..." onkeyup="filterMovies()">
+        <div id="siteControl" class="tab-content" style="display:none;">
+            <h1>✒️ ওয়েবসাইট টেক্সট পরিবর্তন</h1>
+            <div class="glass-panel">
+                <label>টাইটেল (PREMIUM MOVIE STUDIO)</label>
+                <input type="text" id="siteTitleInput">
+                <label>সাব-টাইটেল (ULTIMATE COLLECTION)</label>
+                <input type="text" id="siteSubInput">
+                <button onclick="saveSiteConfig()" class="btn-neon" style="width:auto; padding:10px 30px;">সেভ করুন</button>
             </div>
-            <div id="allMoviesContainer" class="movie-list-container"><p style="text-align:center; color:var(--text-muted);">Loading content...</p></div>
         </div>
-
-        <div id="add-content" class="view-section">
-            <div class="form-card">
-                <div class="form-row">
-                    <div class="form-col">
-                        <div style="background:#0f172a; padding:4px; border-radius:6px; margin-bottom:20px; display:flex; border:1px solid var(--border);">
-                            <button id="btnMov" class="btn-action" style="margin:0; flex:1; background:var(--primary); box-shadow:none; border-radius:4px;" onclick="setType('movie')">Movie</button>
-                            <button id="btnSer" class="btn-action" style="margin:0; flex:1; background:transparent; color:var(--text-muted); box-shadow:none;" onclick="setType('series')">Series</button>
-                        </div>
-                        <div class="form-group"><label class="form-label">System ID</label><input type="text" id="mCustomId" class="form-input" readonly placeholder="Auto ID"></div>
-                        
-                        <div class="form-group"><label class="form-label">Content Title</label>
-                            <div class="input-group"><input type="text" id="mTitle" class="form-input"><button class="paste-btn" onclick="pasteToInput(this)"><i class="fa-regular fa-clipboard"></i></button></div>
-                        </div>
-                        
-                        <div class="form-group"><label class="form-label">Poster Image URL</label>
-                            <div class="input-group"><input type="text" id="mPoster" class="form-input" oninput="updatePreview()"><button class="paste-btn" onclick="pasteToInput(this, true)"><i class="fa-regular fa-clipboard"></i></button></div>
-                        </div>
-
-                        <div style="display:flex; gap:15px;">
-                            <div class="form-group" style="flex:1;"><label class="form-label">Badge Quality</label>
-                                <select id="mRes" class="form-select">
-                                    <option>4K [UHD]</option><option selected>1080p [FHD]</option><option>720p [HD]</option><option>480p [SD]</option><option>HD-Rip</option><option>WEB-DL</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="flex:1;"><label class="form-label">Category</label>
-                                <select id="mGenre" class="form-select">
-                                    <option>Action</option><option>Comedy</option><option>Horror</option><option>Drama</option><option>Sci-Fi</option><option>Bangla</option><option>Thriller</option><option>Adventure</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group"><label class="form-label">Audio Language</label>
-                            <select id="mLang" class="form-select">
-                                <option>Bengali</option><option>Hindi</option><option>English</option><option>Hindi Dubbed</option><option selected>Dual Audio [Hin-Eng]</option><option>Multi Audio</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group" id="seasonGroup" style="display:none;">
-                            <label class="form-label">Season Number (00-99)</label>
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <span style="color:var(--text-muted); font-weight:bold; font-size:14px;">SEASON</span>
-                                <select id="sDigit1" class="digit-select"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
-                                <select id="sDigit2" class="digit-select"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="width:150px; display:flex; justify-content:center;">
-                        <div class="poster-preview-box"><span class="poster-placeholder">No Image</span><img id="previewImg" src=""></div>
-                    </div>
+<div id="addMovie" class="tab-content" style="display:none;">
+            <h1>🚀 মুভি ম্যানেজার</h1>
+            <div class="glass-panel" style="border-color:var(--accent);">
+                <label id="fetchStatus">যেকোনো পুরাতন মুভি খুঁজতে নাম লিখুন</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="tmdbQuery" placeholder="মুভির নাম..." style="margin:0;">
+                    <button onclick="fetchTMDB()" style="background:var(--accent); border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">FETCH</button>
                 </div>
+            </div>
 
-                <div class="form-group" style="margin-top:20px; border-top: 1px solid var(--border); padding-top: 20px;">
-                    <label class="form-label" id="epLabel" style="color:var(--primary); font-size:13px;">DOWNLOAD / STREAM LINKS</label>
-                    <div id="episodeContainer"></div>
-                    <button id="addEpBtn" class="btn-action" style="background:var(--card); border:1px solid var(--border); color:var(--text-muted); font-size:12px; margin-top:10px;" onclick="addContentItem()">
-                        <i class="fa-solid fa-plus"></i> Add New
-                    </button>
-                </div>
-                
-                <div class="form-group"><label class="form-label">Short Description</label>
-                    <div class="input-group"><textarea id="mDesc" class="form-textarea" rows="2"></textarea><button class="paste-btn" onclick="pasteToInput(this)"><i class="fa-regular fa-clipboard"></i></button></div>
-                </div>
-
+            <div class="glass-panel">
                 <input type="hidden" id="editId">
-                <div style="display:flex; gap:15px;">
-                    <button class="btn-action" id="submitBtn" onclick="uploadData()" style="flex:2;">PUBLISH NOW</button>
-                    <button class="btn-action" style="flex:1; background:#0f172a; border:1px solid var(--border);" onclick="resetForm()">RESET</button>
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+                    <input type="text" id="mTitle" placeholder="মুভির নাম">
+                    <input type="text" id="mRating" placeholder="রেটিং">
                 </div>
-                <button class="btn-action" id="cancelEditBtn" style="background:#0f172a; border:1px solid var(--border); display:none;" onclick="resetForm()">Cancel Editing</button>
+                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:15px;">
+                    <div>
+                        <img id="posterPreview" src="" style="width:100%; border-radius:10px; border:1px solid #333; min-height:150px; background:#000; object-fit:cover;">
+                        <input type="text" id="mImg" placeholder="পোস্টার লিঙ্ক">
+                        <label>মুভি কার্ড ব্যাজ</label>
+                        <select id="mRes">
+                            <option value="4K UHD">🌟 4K UHD</option>
+                            <option value="1080p FHD">💎 1080p FHD</option>
+                            <option value="720p HD" selected>📺 720p HD</option>
+                            <option value="HDRip">🌈 HDRip</option>
+                            <option value="BluRay">💿 BluRay</option>
+                        </select>
+                    </div>
+                    <div>
+                        <textarea id="mDesc" style="height:110px;" placeholder="ডেসক্রিপশন..."></textarea>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <input type="text" id="mGenre" placeholder="জেনরা">
+                            <select id="mLang">
+                                <option value="Dual Audio">Dual Audio (Hin-Eng)</option>
+                                <option value="Bangla Dubbed">Bangla Dubbed</option>
+                                <option value="Bengali">Bengali</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="English">English</option>
+                                <option value="South Hindi Dubbed">South Hindi Dubbed</option>
+                                <option value="Multi Audio">Multi Audio (4+ Lang)</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Korean">Korean</option>
+                                <option value="Bhojpuri">Bhojpuri</option>
+                            </select>
+                        </div>
+                        <input type="text" id="mNote" placeholder="হলুদ বক্সের নোটিশ...">
+                    </div>
+                </div>
+                <button onclick="saveMovie()" class="btn-neon" style="margin-top:10px;">PUBLISH CONTENT</button>
             </div>
         </div>
 
-        <div id="requests" class="view-section"><h3 style="color:var(--text-muted); font-size:16px;">User Requests</h3><div id="reqList">Loading...</div></div>
-        <div id="reports" class="view-section"><h3 style="color:var(--primary); font-size:16px;">Reported Issues</h3><div id="repList">Loading...</div></div>
+        <div id="manageMovies" class="tab-content" style="display:none;">
+            <h1>📂 ডাটাবেস লিস্ট</h1>
+            <input type="text" id="searchList" placeholder="মুভি খুঁজুন..." onkeyup="renderList()">
+            <div id="movieListContainer" style="margin-top:15px;"></div>
+        </div>
+
+        <div id="requests" class="tab-content" style="display:none;">
+            <h1>🔔 রিকোয়েস্ট লিস্ট</h1>
+            <div id="reqList"></div>
+        </div>
     </div>
-
-    <div id="customPopup"><div class="popup-box"><div style="font-size:40px; margin-bottom:15px; color:var(--primary);" id="popIcon">✅</div><h3 id="popTitle" style="margin:0; color:var(--text); font-size:18px;">Success</h3><p id="popMsg" style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">Operation completed.</p><button class="btn-action" style="margin-top:0; padding:10px;" onclick="document.getElementById('customPopup').style.display='none'">Okay</button></div></div>
-    <div id="notifyToast" class="notify-toast"><div class="notify-icon" style="color:var(--primary); font-size:20px;"><i class="fa-solid fa-bell"></i></div><div class="notify-text"><h4 id="notifyTitle" style="margin:0; font-size:14px;">Title</h4><p id="notifyBody" style="margin:2px 0 0 0; font-size:12px; color:var(--text-muted);">Body</p></div></div>
 <script>
-        const firebaseConfig = { apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI", authDomain: "pritam-ott.firebaseapp.com", databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com", projectId: "pritam-ott", storageBucket: "pritam-ott.firebasestorage.app", messagingSenderId: "8916733532", appId: "1:8916733532:web:8b1143a7352770ff7e6099" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    const firebaseConfig = { 
+        apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI", 
+        authDomain: "pritam-ott.firebaseapp.com", 
+        databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com", 
+        projectId: "pritam-ott", 
+        storageBucket: "pritam-ott.firebasestorage.app", 
+        messagingSenderId: "8916733532", 
+        appId: "1:8916733532:web:8b1143a7352770ff7e6099" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let allMovies = [];
 
-        let currentType = 'movie', allMoviesData = [];
-        let lastReqCount = -1, lastRepCount = -1;
+    function showPop(t, m) { document.getElementById('popTitle').innerText=t; document.getElementById('popMsg').innerText=m; document.getElementById('customPopup').style.display='flex'; }
+    function closePop() { document.getElementById('customPopup').style.display='none'; }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
-        function checkLogin() {
-            const u = document.getElementById('adminUser').value, p = document.getElementById('adminPass').value;
-            if(u === "pritom" && p === "2026") {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('mainNav').style.display = 'flex';
-                document.getElementById('mainContainer').style.display = 'block';
-                initApp();
-            } else { document.getElementById('loginError').style.display = 'block'; }
-        }
+    function switchTab(t) { 
+        document.querySelectorAll('.tab-content').forEach(e=>e.style.display='none'); 
+        document.getElementById(t).style.display='block'; 
+        document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+        if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active');
+    }
 
-        function logout() { location.reload(); }
-
-        function initApp() { setType('movie'); loadMovies(); loadRequests(); loadReports(); loadStats(); }
+    async function fetchTMDB() {
+        const q = document.getElementById('tmdbQuery').value;
+        if(!q) return showPop("ভুল", "মুভির নাম লিখুন!");
+        const status = document.getElementById('fetchStatus');
+        status.innerHTML = "🔍 <span style='color:var(--accent)'>Please wait, data fetching...</span>";
         
-        function switchTab(id, el) {
-            document.querySelectorAll('.view-section').forEach(d => d.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            if(el) el.classList.add('active');
-            if(id === 'add-content' && !document.getElementById('editId').value) generateNextId();
-        }
-
-        async function pasteToInput(btn, isPoster = false) {
-            const input = btn.previousElementSibling;
-            try {
-                const text = await navigator.clipboard.readText();
-                input.value = text;
-                if(isPoster) updatePreview();
-            } catch (err) {
-                input.focus();
-                showAdminNotify("Paste Mode", "Long press box to paste");
-            }
-        }
-
-        function setType(type) {
-            currentType = type;
-            // Update button styles for professional theme
-            document.getElementById('btnMov').style.background = type === 'movie' ? 'var(--primary)' : 'transparent';
-            document.getElementById('btnMov').style.color = type === 'movie' ? '#fff' : 'var(--text-muted)';
-            document.getElementById('btnSer').style.background = type === 'series' ? 'var(--primary)' : 'transparent';
-            document.getElementById('btnSer').style.color = type === 'series' ? '#fff' : 'var(--text-muted)';
-            document.getElementById('seasonGroup').style.display = type === 'series' ? 'block' : 'none';
-            
-            const cont = document.getElementById('episodeContainer'), btn = document.getElementById('addEpBtn');
-            cont.innerHTML = "";
-            if(type === 'movie') { 
-                btn.style.display = 'none'; 
-                addContentItem(true); 
-            } else { 
-                btn.style.display = 'block'; 
-                btn.innerHTML = "+ Add Episode";
-                addContentItem(false); 
-            }
-        }
-
-        // --- DYNAMIC CONTENT ---
-        function addContentItem(isMovie = false, data = {}) {
-            const cont = document.getElementById('episodeContainer');
-            const count = cont.children.length + 1;
-            const epNum = data.ep || count;
-            
-            const block = document.createElement('div');
-            block.className = 'episode-block';
-            
-            let headerHTML = '';
-            if(!isMovie) {
-                headerHTML = `
-                    <div class="episode-header">
-                        <span class="episode-title">Episode ${epNum}</span>
-                        <input type="hidden" class="ep-number-val" value="${epNum}">
-                        <button class="btn-icon btn-del" onclick="this.closest('.episode-block').remove()" style="width:25px;height:25px; background:transparent; border:none;"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
+        try {
+            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&query=${q}&language=en-US`);
+            const data = await res.json();
+            if(data.results?.[0]) {
+                const info = data.results[0];
+                document.getElementById('mTitle').value = info.title || info.name;
+                const img = `https://image.tmdb.org/t/p/w500${info.poster_path}`;
+                document.getElementById('mImg').value = img;
+                document.getElementById('posterPreview').src = img;
+                document.getElementById('mRating').value = (info.vote_average || 0).toFixed(1);
+                
+                const resBn = await fetch(`https://api.themoviedb.org/3/${info.media_type}/${info.id}?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&language=bn-BD`);
+                const dataBn = await resBn.json();
+                document.getElementById('mDesc').value = dataBn.overview || info.overview;
+                
+                status.innerHTML = "✅ <span style='color:#00ff88'>তথ্য পাওয়া গেছে!</span>";
             } else {
-                headerHTML = `<div class="episode-header"><span class="episode-title">Movie Qualities</span></div>`;
+                showPop("দুঃখিত", "মুভিটি খুঁজে পাওয়া যায়নি!");
+                status.innerText = "Fetch from TMDB";
             }
+        } catch(e) { showPop("এরর", "সার্ভার সমস্যা!"); }
+    }
 
-            const qualityContainerID = `qualities-${Date.now()}-${Math.random()}`;
-            let qualitiesHTML = '';
-            const qualitiesToLoad = data.qualities || [{qual:'1080p', size:'', watch:'', dl:''}];
-            
-            qualitiesToLoad.forEach(q => { qualitiesHTML += createQualityRowHTML(q); });
-
-            block.innerHTML = `
-                ${headerHTML}
-                <div id="${qualityContainerID}">${qualitiesHTML}</div>
-                <button class="btn-action" style="padding:8px; font-size:11px; margin-top:5px; background:#1e293b; border:1px solid var(--border); color:var(--text-muted); width:auto;" onclick="addQualityRow('${qualityContainerID}')">
-                    + Add Link
-                </button>
-            `;
-            cont.appendChild(block);
-        }
-
-        function createQualityRowHTML(q = {}) {
-            return `
-                <div class="quality-row">
-                    <div style="flex:1;">
-                        <div class="row-flex">
-                            <select class="sm-input ep-qual" style="width:85px;">
-                                <option ${q.qual=='2160p'?'selected':''}>2160p</option>
-                                <option ${q.qual=='1080p'?'selected':''}>1080p</option>
-                                <option ${q.qual=='720p'?'selected':''}>720p</option>
-                                <option ${q.qual=='480p'?'selected':''}>480p</option>
-                                <option ${q.qual=='4K'?'selected':''}>4K</option>
-                            </select>
-                            <input type="text" class="sm-input ep-size" value="${q.size||''}" placeholder="Size (e.g. 1GB)">
-                        </div>
-                        <div class="row-flex">
-                            <div class="input-group"><input type="text" class="sm-input ep-watch" value="${q.watch||''}" placeholder="Stream URL"><button class="paste-btn" onclick="pasteToInput(this)"><i class="fa-regular fa-clipboard"></i></button></div>
-                        </div>
-                        <div class="row-flex">
-                            <div class="input-group"><input type="text" class="sm-input ep-dl" value="${q.dl||''}" placeholder="Download URL"><button class="paste-btn" onclick="pasteToInput(this)"><i class="fa-regular fa-clipboard"></i></button></div>
-                        </div>
-                    </div>
-                    <button class="btn-icon btn-del" onclick="this.closest('.quality-row').remove()" style="align-self:center; background:transparent; border:none;"><i class="fa-solid fa-xmark"></i></button>
+    function renderList() {
+        const s = document.getElementById('searchList').value.toLowerCase();
+        const list = allMovies.filter(m => (m.title||"").toLowerCase().includes(s));
+        document.getElementById('movieListContainer').innerHTML = list.map(m => `
+            <div class="item-card">
+                <img src="${m.img}" class="list-img">
+                <div style="flex:1"><b>${m.title}</b><br><small style="color:#666">${m.res || 'HD'}</small></div>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="editMovie('${m.id}')" class="edit-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button onclick="deleteMovie('${m.id}')" class="del-btn"><i class="fa-solid fa-trash"></i></button>
                 </div>
-            `;
-        }
+            </div>`).join('');
+    }
 
-        function addQualityRow(containerID) {
-            const container = document.getElementById(containerID);
-            const div = document.createElement('div');
-            div.innerHTML = createQualityRowHTML({qual:'720p', size:'', watch:'', dl:''});
-            container.appendChild(div.firstElementChild);
-        }
+    function saveMovie() {
+        const id = document.getElementById('editId').value || 'mov_' + Date.now();
+        const data = {
+            title: document.getElementById('mTitle').value,
+            img: document.getElementById('mImg').value,
+            desc: document.getElementById('mDesc').value,
+            rating: document.getElementById('mRating').value,
+            res: document.getElementById('mRes').value,
+            lang: document.getElementById('mLang').value,
+            genre: document.getElementById('mGenre').value,
+            note: document.getElementById('mNote').value,
+            uploadTime: new Date().toISOString()
+        };
+        db.ref('movies/' + id).update(data).then(() => {
+            showPop("সফল", "মুভি আপলোড/আপডেট হয়েছে!");
+            clearForm();
+            switchTab('manageMovies');
+        });
+    }
 
-        function updatePreview() {
-            const url = document.getElementById('mPoster').value, img = document.getElementById('previewImg'), ph = document.querySelector('.poster-placeholder');
-            if(url) { img.src = url; img.style.display = 'block'; ph.style.display = 'none'; } else { img.style.display = 'none'; ph.style.display = 'block'; }
-        }
+    function editMovie(id) {
+        const m = allMovies.find(x => x.id === id);
+        if(!m) return;
+        document.getElementById('editId').value = m.id;
+        document.getElementById('mTitle').value = m.title;
+        document.getElementById('mImg').value = m.img;
+        document.getElementById('posterPreview').src = m.img;
+        document.getElementById('mDesc').value = m.desc;
+        document.getElementById('mRating').value = m.rating;
+        document.getElementById('mGenre').value = m.genre || "";
+        switchTab('addMovie');
+    }
 
-        function generateNextId() {
-            let maxId = 0;
-            allMoviesData.forEach(m => { if(m.customId && m.customId.startsWith('m')) { const num = parseInt(m.customId.substring(1)); if(!isNaN(num) && num > maxId) maxId = num; } });
-            if (maxId === 0 && allMoviesData.length > 0) maxId = allMoviesData.length;
-            document.getElementById('mCustomId').value = 'm' + (maxId + 1);
-        }
+    function deleteMovie(id) { if(confirm("মুছে ফেলবেন?")) db.ref('movies/'+id).remove().then(()=>showPop("মুছে গেছে", "মুভিটি ডিলিট হয়েছে।")); }
 
-        function uploadData() {
-            const id = document.getElementById('editId').value;
-            const title = document.getElementById('mTitle').value, poster = document.getElementById('mPoster').value;
-            const s1 = document.getElementById('sDigit1').value, s2 = document.getElementById('sDigit2').value;
-            const season = parseInt(s1 + s2); 
+    function saveSiteConfig() {
+        const t = document.getElementById('siteTitleInput').value;
+        const s = document.getElementById('siteSubInput').value;
+        db.ref('siteConfig').set({ title: t, subTitle: s }).then(() => showPop("সফল", "সাইট টেক্সট সেভ হয়েছে!"));
+    }
 
-            if(!title || !poster) return showPopup("Error", "Title & Poster required!", "❌");
+    function clearForm() { 
+        document.getElementById('editId').value = "";
+        document.querySelectorAll('input, textarea').forEach(i => i.value = "");
+        document.getElementById('posterPreview').src = "";
+    }
 
-            let contentData = []; 
-            const blocks = document.querySelectorAll('.episode-block');
-            blocks.forEach(block => {
-                let qualities = [];
-                block.querySelectorAll('.quality-row').forEach(row => {
-                    qualities.push({ qual: row.querySelector('.ep-qual').value, size: row.querySelector('.ep-size').value, watch: row.querySelector('.ep-watch').value, dl: row.querySelector('.ep-dl').value });
-                });
-                if(currentType === 'series') contentData.push({ epNum: block.querySelector('.ep-number-val').value, qualities: qualities });
-                else contentData = qualities; 
-            });
-
-            const data = { title: title, img: poster, res: document.getElementById('mRes').value, genre: document.getElementById('mGenre').value, desc: document.getElementById('mDesc').value, lang: document.getElementById('mLang').value, customId: document.getElementById('mCustomId').value, uploadTime: new Date().toISOString(), type: currentType, seasonNum: season, content: contentData };
-
-            const action = id ? db.ref('movies/' + id).update(data) : db.ref('movies').push(data);
-            action.then(() => { setTimeout(() => { showPopup("Published", "Content is live!", "✅"); resetForm(); }, 1000); });
-        }
-
-        function loadMovies() {
-            db.ref('movies').on('value', snap => {
-                allMoviesData = [];
-                document.getElementById('allMoviesContainer').innerHTML = "";
-                snap.forEach(c => { const m = c.val(); m.key = c.key; allMoviesData.push(m); });
-                renderMovieList(allMoviesData);
-                document.getElementById('totalMov').innerText = allMoviesData.length;
-                if(document.getElementById('add-content').classList.contains('active') && !document.getElementById('editId').value) generateNextId();
-            });
-        }
-
-        function renderMovieList(data) {
-            const list = document.getElementById('allMoviesContainer');
-            list.innerHTML = "";
-            [...data].reverse().forEach(m => {
-                list.innerHTML += `<div class="movie-item"><img src="${m.img}" class="movie-thumb"><div class="movie-info"><h4>${m.title}</h4><span>${m.customId || 'Old'}</span><span>${m.res}</span></div><div class="action-btns"><button class="btn-icon btn-edit" onclick="editMovie('${m.key}')"><i class="fa-solid fa-pen"></i></button><button class="btn-icon btn-del" onclick="deleteMovie('${m.key}')"><i class="fa-solid fa-trash"></i></button></div></div>`;
-            });
-        }
-
-        function filterMovies() {
-            const q = document.getElementById('searchBox').value.toLowerCase();
-            renderMovieList(allMoviesData.filter(m => m.title.toLowerCase().includes(q) || (m.customId && m.customId.toLowerCase().includes(q))));
-        }
-
-        function editMovie(key) {
-            const m = allMoviesData.find(x => x.key === key);
-            if(!m) return;
-            document.getElementById('editId').value = key;
-            document.getElementById('mTitle').value = m.title;
-            document.getElementById('mPoster').value = m.img;
-            document.getElementById('mRes').value = m.res;
-            document.getElementById('mGenre').value = m.genre;
-            document.getElementById('mDesc').value = m.desc;
-            document.getElementById('mLang').value = m.lang || 'Dual Audio [Hin-Eng]';
-            document.getElementById('mCustomId').value = m.customId || '';
-            let sNum = (m.seasonNum || '1').toString();
-            if(sNum.length < 2) sNum = '0' + sNum;
-            document.getElementById('sDigit1').value = sNum[0];
-            document.getElementById('sDigit2').value = sNum[1];
-            updatePreview(); setType(m.type || 'movie');
-            const cont = document.getElementById('episodeContainer'); cont.innerHTML = "";
-            
-            if(m.type === 'series') {
-                if(m.content) m.content.forEach(ep => addContentItem(false, {ep: ep.epNum, qualities: ep.qualities}));
-                else if(m.seasons) m.seasons.forEach(s => addContentItem(false, {ep: s.ep, qualities: [{qual:s.qual, size:s.size, watch:s.watch, dl:s.dl}]}));
-            } else {
-                if(Array.isArray(m.content)) addContentItem(true, {qualities: m.content});
-                else if(m.seasons) { const oldQuals = m.seasons.map(s => ({qual:s.qual, size:s.size, watch:s.watch, dl:s.dl})); addContentItem(true, {qualities: oldQuals}); }
-            }
-            switchTab('add-content', document.querySelector('.tab-item:nth-child(3)'));
-            document.getElementById('submitBtn').innerText = "UPDATE CONTENT";
-            document.getElementById('cancelEditBtn').style.display = "block";
-        }
-
-        function deleteMovie(key) { if(confirm("Delete this movie?")) db.ref('movies/' + key).remove(); }
-
-        function resetForm() {
-            document.getElementById('editId').value = ""; document.getElementById('mTitle').value = ""; document.getElementById('mPoster').value = ""; document.getElementById('mDesc').value = ""; document.getElementById('sDigit1').value = "0"; document.getElementById('sDigit2').value = "1";
-            document.getElementById('previewImg').style.display = 'none'; document.querySelector('.poster-placeholder').style.display = 'block';
-            document.getElementById('submitBtn').innerText = "PUBLISH NOW"; document.getElementById('cancelEditBtn').style.display = "none";
-            generateNextId(); setType('movie');
-        }
-
-        function showPopup(t, m, i) { document.getElementById('popTitle').innerText = t; document.getElementById('popMsg').innerText = m; document.getElementById('popIcon').innerText = i; document.getElementById('customPopup').style.display = 'flex'; }
-        function showAdminNotify(title, msg) { const toast = document.getElementById('notifyToast'); document.getElementById('notifyTitle').innerText = title; document.getElementById('notifyBody').innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 4000); }
-        function loadRequests() { db.ref('requests').on('value', s => { document.getElementById('reqList').innerHTML = ""; s.forEach(c => { const r = c.val(); document.getElementById('reqList').innerHTML += `<div class="movie-item"><div class="movie-info"><h4>${r.movieName}</h4><span>${r.userName}</span></div><button class="btn-icon btn-del" onclick="db.ref('requests/${c.key}').remove()"><i class="fa-solid fa-check"></i></button></div>`; }); document.getElementById('reqCount').innerText = s.numChildren(); document.getElementById('reqCount').style.display = s.numChildren() > 0 ? 'block' : 'none'; document.getElementById('totalReq').innerText = s.numChildren(); }); }
-        function loadReports() { db.ref('reports').on('value', s => { document.getElementById('repList').innerHTML = ""; s.forEach(c => { const r = c.val(); document.getElementById('repList').innerHTML += `<div class="movie-item" style="border-color:var(--primary);"><div class="movie-info"><h4>${r.movie}</h4><span>Broken Link</span></div><button class="btn-icon btn-del" onclick="db.ref('reports/${c.key}').remove()"><i class="fa-solid fa-check"></i></button></div>`; }); document.getElementById('repCount').innerText = s.numChildren(); document.getElementById('repCount').style.display = s.numChildren() > 0 ? 'block' : 'none'; }); }
-        function loadStats() { db.ref('movies').on('value', s => document.getElementById('totalMov').innerText = s.numChildren()); db.ref('notice').on('value', s => document.getElementById('marqueeTxt').value = s.val() || ""); }
-        function updateNotice() { db.ref('notice').set(document.getElementById('marqueeTxt').value); showPopup("Done", "Notice Updated", "✅"); }
-    </script>
+    window.onload = () => {
+        db.ref('movies').on('value', s => {
+            allMovies = []; const d = s.val();
+            if(d) for(let k in d) allMovies.push({id:k, ...d[k]});
+            allMovies.sort((a,b) => new Date(b.uploadTime) - new Date(a.uploadTime));
+            document.getElementById('totalMovies').innerText = allMovies.length;
+            renderList();
+        });
+        db.ref('movieClicks').on('value', s => {
+            let t = 0, d = s.val(); if(d) for(let k in d) t += d[k];
+            document.getElementById('totalViews').innerText = t;
+        });
+        db.ref('requests').on('value', s => {
+            const count = s.numChildren();
+            document.getElementById('reqBadge').innerText = count;
+            const d = s.val(); let h = '';
+            if(d) for(let k in d) h += `<div class="item-card"><div><b>${d[k].movieName}</b><br><small>${d[k].userName}</small></div><button onclick="db.ref('requests/${k}').remove()" class="action-btn del-btn" style="margin-left:auto">Done</button></div>`;
+            document.getElementById('reqList').innerHTML = h || 'কোনো রিকোয়েস্ট নেই';
+        });
+    };
+</script>
 </body>
 </html>
+
 
 
 
