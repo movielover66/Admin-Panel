@@ -3,63 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔒 SECURE MASTER HUB</title>
+    <title>⚡ GOD MODE MASTER HUB</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Outfit:wght@400;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <style>
-        :root { --bg: #000; --panel: #0a0a0a; --neon-rgb: linear-gradient(45deg, #ff0044, #00f3ff, #00ff00, #ff0044); --accent: #00f3ff; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; padding-top: 85px; overflow-x: hidden; }
-        * { box-sizing: border-box; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        :root { --bg: #050505; --panel: #0a0a0a; --neon-rgb: linear-gradient(45deg, #ff0044, #00f3ff, #00ff00, #ff0044); --accent: #00f3ff; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; padding-top: 85px; overflow-x: hidden; scroll-behavior: smooth; }
+        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
-        /* LOGIN SYSTEM STYLES */
-        #loginScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle at center, #111 0%, #000 70%); }
-        .login-box { width: 350px; padding: 40px; background: rgba(10,10,10,0.8); border-radius: 30px; border: 1px solid #333; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 0 50px rgba(0, 243, 255, 0.1); }
-        .login-input { background: #000 !important; border: 1px solid #333 !important; text-align: center; letter-spacing: 2px; font-size: 18px; }
-
-        /* RGB ANIMATIONS */
+        /* RGB ANIMATION */
         @keyframes rgbCycle { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
         .rgb-border { position: relative; padding: 2px; border-radius: 30px; background: var(--neon-rgb); background-size: 200% 200%; animation: rgbCycle 4s linear infinite; }
         .inner-panel { background: var(--panel); border-radius: 28px; padding: 30px; height: 100%; }
 
-        /* NAV & LAYOUT */
+        /* FEATURED TOGGLE SWITCH */
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; background: #111; padding: 15px; border-radius: 15px; border: 1px solid #333; margin-top: 15px; }
+        .switch { position: relative; display: inline-block; width: 60px; height: 30px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 30px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        input:checked + .slider:before { transform: translateX(30px); }
+
+        /* INPUTS & BUTTONS */
+        input, select, textarea { width: 100%; background: #000; border: 1.5px solid #222; color: #fff; padding: 16px; border-radius: 18px; margin-bottom: 20px; outline: none; font-size: 14px; font-weight: 600; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
+        .btn-neon { background: var(--accent); color: #000; border: none; padding: 18px; width: 100%; border-radius: 18px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-neon:active { transform: scale(0.95); }
+
+        /* LOGS & LISTS */
+        .log-item { padding: 12px; border-bottom: 1px solid #222; font-size: 12px; color: #888; font-family: monospace; }
+        .log-item span { color: var(--accent); font-weight: bold; }
+        
+        /* LOGIN & MODAL */
+        #loginScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; align-items: center; justify-content: center; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .modal-card { background: #080808; width: 90%; max-width: 450px; border-radius: 40px; border: 2px solid var(--accent); overflow: hidden; box-shadow: 0 0 80px rgba(0, 243, 255, 0.2); }
+        
         .top-nav { position: fixed; top: 0; left: 0; width: 100%; height: 85px; background: rgba(5,5,5,0.95); border-bottom: 1px solid #222; display: flex; align-items: center; justify-content: space-around; z-index: 5000; backdrop-filter: blur(20px); }
         .nav-tab { color: #555; font-size: 26px; cursor: pointer; padding: 12px 30px; border-radius: 18px; }
         .nav-tab.active { color: var(--accent); background: rgba(0, 243, 255, 0.08); filter: drop-shadow(0 0 8px var(--accent)); }
-
-        /* COMMON INPUTS */
-        input, select, textarea { width: 100%; background: #050505; border: 1.5px solid #222; color: #fff; padding: 16px; border-radius: 18px; margin-bottom: 20px; outline: none; font-size: 14px; font-weight: 600; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
-        label { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 2px; }
-
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-card { background: #080808; width: 90%; max-width: 450px; border-radius: 40px; border: 2px solid var(--accent); overflow: hidden; }
-        
-        .list-item { padding: 15px; background: #111; margin-bottom: 8px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; border: 1px solid transparent; }
-        .list-item:hover { border-color: var(--accent); background: #161616; }
-        
-        .btn-neon { background: var(--accent); color: #000; border: none; padding: 18px; width: 100%; border-radius: 18px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
-        
-        /* HIDDEN CONTENT UNTIL LOGIN */
         #mainApp { display: none; }
     </style>
 </head>
 <body>
     <div id="loginScreen">
-        <div class="rgb-border"><div class="login-box">
-            <h2 style="margin-top:0; color:var(--accent);">SECURITY CHECK</h2>
-            <input type="text" id="usrInput" class="login-input" placeholder="USERNAME">
-            <input type="password" id="passInput" class="login-input" placeholder="PASSWORD">
-            <button onclick="checkLogin()" class="btn-neon" style="margin-top:10px;">UNLOCK PANEL</button>
-            <p id="loginMsg" style="color:red; font-size:12px; margin-top:10px;"></p>
+        <div class="rgb-border"><div class="inner-panel" style="text-align:center; width:320px;">
+            <h2 style="color:var(--accent); font-family:'Rajdhani';">SYSTEM LOCKED</h2>
+            <input type="text" id="usrInput" placeholder="USER ID" style="text-align:center;">
+            <input type="password" id="passInput" placeholder="ACCESS CODE" style="text-align:center;">
+            <button onclick="checkLogin()" class="btn-neon">UNLOCK CORE</button>
+            <p id="loginMsg" style="color:red; font-size:11px; margin-top:10px;"></p>
         </div></div>
     </div>
 
     <div id="mainApp">
         <div id="masterModal" class="modal-overlay">
             <div class="modal-card">
-                <div id="modalDisplayTitle" style="padding:25px; background:#111; text-align:center; border-bottom:1px solid #222; color:var(--accent); font-weight:800; text-transform: uppercase;">NOTIFICATION</div>
+                <div id="modalDisplayTitle" style="padding:25px; background:#111; text-align:center; border-bottom:1px solid #222; color:var(--accent); font-weight:800;">NOTIFICATION</div>
                 <div id="mBody" style="max-height: 400px; overflow-y: auto; padding: 15px;"></div>
                 <div style="padding: 20px;"><button onclick="closeModal()" class="btn-neon">CLOSE</button></div>
             </div>
@@ -67,6 +71,12 @@
 
         <div class="top-nav">
             <div class="nav-tab active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i></div>
+            
+            <div class="nav-tab" onclick="switchTab('inbox')">
+                <i class="fa-solid fa-bell"></i>
+                <span id="notifBadge" style="position:absolute; top:15px; right:25px; width:8px; height:8px; background:red; border-radius:50%; display:none; box-shadow:0 0 10px red;"></span>
+            </div>
+
             <div class="nav-tab" onclick="switchTab('upload')"><i class="fa-solid fa-cloud-arrow-up"></i></div>
             <div class="nav-tab" onclick="switchTab('database')"><i class="fa-solid fa-server"></i></div>
             <div class="nav-tab" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i></div>
@@ -74,21 +84,30 @@
 
         <div style="padding: 25px;">
             <div id="dashboard" class="tab-content">
-                <h1 style="font-size:35px; margin-bottom:30px;">SERVER <span style="color:var(--accent);">ANALYTICS</span></h1>
-                
+                <h1 style="font-family:'Rajdhani'; font-size:35px;">COMMAND <span style="color:var(--accent);">CENTER</span></h1>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                     <div class="rgb-border"><div class="inner-panel">
                         <label>Total Assets</label>
                         <h2 id="totalMovies" style="font-size:50px; margin:0; color:#fff;">0</h2>
                     </div></div>
-                    
                     <div class="rgb-border"><div class="inner-panel">
                         <label>Live Traffic</label>
                         <h2 id="liveViews" style="font-size:50px; margin:0; color:var(--accent);">0</h2>
                     </div></div>
                 </div>
+                
+                <div style="margin-top:20px; display:flex; gap:20px;">
+                    <div class="inner-panel" style="border:1px solid #333; flex:1;">
+                        <label style="color:red;">Pending Reports</label>
+                        <h2 id="pendingReports" style="margin:0;">0</h2>
+                    </div>
+                    <div class="inner-panel" style="border:1px solid #333; flex:1;">
+                        <label style="color:#ffd700;">New Requests</label>
+                        <h2 id="pendingRequests" style="margin:0;">0</h2>
+                    </div>
+                </div>
             </div>
-<div id="upload" class="tab-content" style="display:none;">
+            <div id="upload" class="tab-content" style="display:none;">
                 <div class="rgb-border" style="margin-bottom:30px;"><div class="inner-panel" style="padding:20px;">
                     <label>GLOBAL TMDB SEARCH</label>
                     <div style="display:flex; gap:15px;">
@@ -103,42 +122,46 @@
                     <div style="display:grid; grid-template-columns: 110px 1fr; gap:25px;">
                         <div>
                             <img id="posterPreview" src="" style="width:100%; border-radius:15px; min-height:160px; background:#000; object-fit:cover; border:1px solid #333;">
-                            <select id="cardBadge" style="margin-top:15px; padding:10px;">
-                                <option>4K UHD</option><option>1080p FHD</option><option selected>720p HD</option>
-                            </select>
+                            
+                            <div class="toggle-container">
+                                <label style="margin:0; font-size:9px;">FEATURED?</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="isFeatured">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <label style="margin-top:10px; font-size:10px;">BACKDROP</label>
+                            <img id="backdropPreview" src="" style="width:100%; height:60px; border-radius:10px; object-fit:cover; border:1px solid #333;">
                         </div>
                         <div>
-                            <label>Content Title (Auto)</label>
+                            <label>Content Title</label>
                             <input type="text" id="mTitle" placeholder="Title auto-fills here...">
                             
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                                <div>
-                                    <label>Type</label>
-                                    <select id="mType" onchange="toggleTypeUI()"><option value="movie">Movie</option><option value="series">Web Series</option></select>
-                                </div>
-                                <div id="seasonBox" style="display:none;">
-                                    <label>Season</label>
-                                    <input type="number" id="mSeason" value="1">
-                                </div>
+                                <div><label>Trailer (Auto)</label><input type="text" id="mTrailer" placeholder="YouTube Link..."></div>
+                                <div><label>Cast (Auto)</label><input type="text" id="mCast" placeholder="Actors..."></div>
                             </div>
 
-                            <label>Language (20+ Dubbed)</label>
-                            <select id="mLang">
-                                <option>Dual Audio</option><option>Bangla Dubbed</option><option>Hindi Dubbed</option>
-                                <option>Tamil Dubbed</option><option>Telugu Dubbed</option><option>English Dubbed</option>
-                                <option>Korean Dubbed</option><option>Japanese Dubbed</option><option>Bengali Original</option><option>Hindi Original</option>
-                                <option>English Original</option><option>Tamil Original</option><option>Malayalam</option><option>Kannada</option><option>Marathi</option>
-                            </select>
+                            <label style="color:#00ff00;">GENRES</label>
+                            <input type="text" id="mGenre" style="border-color:#00ff00;">
+
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                <div><label>Type</label><select id="mType" onchange="toggleTypeUI()"><option value="movie">Movie</option><option value="series">Web Series</option></select></div>
+                                <div id="seasonBox" style="display:none;"><label>Season</label><input type="number" id="mSeason" value="1"></div>
+                            </div>
+                            
+                            <label>Language</label>
+                            <select id="mLang"><option>Dual Audio</option><option>Hindi Dubbed</option><option>Bangla Dubbed</option><option>English Original</option></select>
                         </div>
                     </div>
 
-                    <label style="margin-top:20px; color:#ffd700;">DETAILS PAGE NOTICE (YELLOW ALERT)</label>
-                    <input type="text" id="mNotice" placeholder="e.g. Next Episode Coming Next Week..." style="border-color:#ffd700;">
-
-                    <label>Description (Auto)</label>
-                    <textarea id="mDesc" style="height:100px;" placeholder="Synopsis auto-fills here..."></textarea>
-                    <input type="hidden" id="mGenre"><input type="hidden" id="mRating">
-
+                    <input type="hidden" id="mBackdrop"> <input type="hidden" id="mRating">
+                    <label style="margin-top:15px; color:#ffd700;">DETAILS NOTICE</label>
+                    <input type="text" id="mNotice" placeholder="Yellow Alert Note..." style="border-color:#ffd700;">
+                    <label>Description</label>
+                    <textarea id="mDesc" style="height:80px;"></textarea>
+                    
                     <div style="background:#000; border:2px dashed var(--accent); padding:20px; border-radius:20px; margin-top:20px;">
                         <div style="display:grid; grid-template-columns: 70px 1fr 1fr 50px; gap:10px; align-items:end;">
                             <div id="epBox" style="display:none;"><label>EP</label><input type="number" id="epNum" value="1" style="margin:0;"></div>
@@ -154,44 +177,81 @@
                         <button onclick="publish()" class="btn-neon">PUBLISH</button>
                     </div>
                 </div>
-</div>
-<div id="database" class="tab-content" style="display:none;">
+            </div>
+            <div id="database" class="tab-content" style="display:none;">
                 <div class="rgb-border"><div class="inner-panel">
                     <input type="text" id="dbSearch" placeholder="Search Database..." onkeyup="renderDB()">
                     <div id="dbList" style="margin-top:20px;"></div>
                 </div></div>
             </div>
 
+            <div id="inbox" class="tab-content" style="display:none;">
+                <h1>USER <span style="color:var(--accent);">FEEDBACK</span></h1>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px;">
+                    <div class="rgb-border" style="border-color:red !important; box-shadow:0 0 15px rgba(255,0,0,0.2) !important;">
+                        <div class="inner-panel">
+                            <label style="color:#ff4444;">BROKEN LINKS</label>
+                            <div id="reportList" style="height:400px; overflow-y:auto; margin-top:15px;"></div>
+                        </div>
+                    </div>
+                    <div class="rgb-border" style="border-color:#ffd700 !important; box-shadow:0 0 15px rgba(255,215,0,0.2) !important;">
+                        <div class="inner-panel">
+                            <label style="color:#ffd700;">REQUESTS</label>
+                            <div id="requestList" style="height:400px; overflow-y:auto; margin-top:15px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="settings" class="tab-content" style="display:none;">
-                <h1>GLOBAL CONTROL</h1>
+                <h1>SYSTEM <span style="color:var(--accent);">CONTROL</span></h1>
+                <div class="rgb-border" style="margin-bottom:20px;"><div class="inner-panel">
+                    <label>DATABASE BACKUP</label>
+                    <button onclick="backupDatabase()" class="btn-neon" style="background:#00ff00; color:#000;">DOWNLOAD JSON</button>
+                </div></div>
                 <div class="inner-panel" style="border:1px solid #333;">
-                    <label>App Popup Text</label>
+                    <label>Popup Text</label>
                     <input type="text" id="sitePopup">
-                    <button onclick="saveSettings()" class="btn-neon">SAVE</button>
+                    <button onclick="saveSettings()" class="btn-neon">SAVE CONFIG</button>
                 </div>
             </div>
         </div>
     </div>
-<script>
+    <script>
     const config = { apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI", databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com" };
     firebase.initializeApp(config);
     const db = firebase.database();
     
     let movies = [], tempLinks = [], linkState = 0, currentDL = "";
 
-    // LOGIN SYSTEM
+    // --- 1. SOUND ENGINE (FEATURE 3) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if (type === 'click') { osc.frequency.setValueAtTime(1000, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); }
+        if (type === 'success') { osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(800, now + 0.1); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); }
+        if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); }
+    }
+
+    // --- LOGIN ---
     function checkLogin() {
-        const u = document.getElementById('usrInput').value;
-        const p = document.getElementById('passInput').value;
-        if(u === "pritam" && p === "2026") {
+        if(document.getElementById('usrInput').value === "pritam" && document.getElementById('passInput').value === "2026") {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
+            playSound('success');
+            loadReports(); loadRequests(); // LOAD INBOX DATA
         } else {
-            document.getElementById('loginMsg').innerText = "WRONG CREDENTIALS! ACCESS DENIED.";
+            document.getElementById('loginMsg').innerText = "WRONG CREDENTIALS!";
+            playSound('error');
         }
     }
 
     function switchTab(t) { 
+        playSound('click');
         document.querySelectorAll('.tab-content').forEach(e=>e.style.display='none'); 
         document.getElementById(t).style.display='block'; 
         document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
@@ -199,98 +259,126 @@
         if(t === 'database') renderDB();
     }
 
-    function openModal(title, content) {
-        document.getElementById('modalDisplayTitle').innerText = title; 
-        document.getElementById('mBody').innerHTML = content;
-        document.getElementById('masterModal').style.display = 'flex';
-    }
-    function closeModal() { document.getElementById('masterModal').style.display = 'none'; }
-
-    // --- DEEP TMDB FETCH ---
+    // --- 2. TRAILER FORCE FETCH (FEATURE 1) ---
     async function fetchTMDB() {
+        playSound('click');
         const q = document.getElementById('tmdbQuery').value;
-        if(!q) return alert("Please enter a name!");
-        
+        if(!q) return alert("Enter Name");
         try {
             const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&query=${encodeURIComponent(q)}&language=en-US&include_adult=true`);
             const data = await res.json();
-            
-            let html = data.results.map(i => `
-                <div class="list-item" onclick="syncData('${i.media_type}', ${i.id})">
-                    <img src="https://image.tmdb.org/t/p/w200${i.poster_path}" style="width:40px; height:60px; border-radius:5px;">
-                    <div><b>${i.title || i.name}</b><br><small>${(i.release_date || i.first_air_date || '').split('-')[0]}</small></div>
-                </div>`).join('');
-            
+            let html = data.results.map(i => `<div class="list-item" onclick="syncData('${i.media_type}', ${i.id})"><img src="https://image.tmdb.org/t/p/w200${i.poster_path}" style="width:40px;"><b>${i.title||i.name}</b></div>`).join('');
             openModal("SELECT CONTENT", html);
-        } catch(e) { alert("Check Internet/VPN"); }
+        } catch(e) { playSound('error'); }
     }
 
-    // --- AUTO FILL ---
     async function syncData(type, id) {
-        closeModal();
-        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&language=en-US`);
+        closeModal(); playSound('success');
+        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&language=en-US&append_to_response=credits,videos`);
         const i = await res.json();
         
         document.getElementById('mTitle').value = i.title || i.name;
-        document.getElementById('mDesc').value = i.overview || "";
-        document.getElementById('posterPreview').src = `https://image.tmdb.org/t/p/w500${i.poster_path}`;
+        document.getElementById('mDesc').value = i.overview;
         document.getElementById('mRating').value = i.vote_average;
         document.getElementById('mGenre').value = i.genres ? i.genres.map(g=>g.name).join(", ") : "";
+        document.getElementById('posterPreview').src = `https://image.tmdb.org/t/p/w500${i.poster_path}`;
+        const bg = i.backdrop_path ? `https://image.tmdb.org/t/p/w500${i.backdrop_path}` : "";
+        document.getElementById('mBackdrop').value = bg;
+        document.getElementById('backdropPreview').src = bg;
+
+        // FORCE TRAILER LOGIC
+        let trailerUrl = "";
+        if (i.videos && i.videos.results.length > 0) {
+            const yt = i.videos.results.filter(v => v.site === "YouTube");
+            if (yt.length > 0) {
+                let vid = yt.find(v => v.type === "Trailer") || yt.find(v => v.type === "Teaser") || yt[0];
+                trailerUrl = `https://www.youtube.com/watch?v=${vid.key}`;
+            }
+        }
+        document.getElementById('mTrailer').value = trailerUrl;
+
+        if(i.credits && i.credits.cast) document.getElementById('mCast').value = i.credits.cast.slice(0, 5).map(c => c.name).join(", ");
+        
         document.getElementById('mType').value = (type === 'tv') ? 'series' : 'movie';
         toggleTypeUI();
     }
 
+    // --- 3. INBOX LOGIC ---
+    function loadReports() {
+        db.ref('reports').on('value', s => {
+            document.getElementById('pendingReports').innerText = s.numChildren();
+            document.getElementById('notifBadge').style.display = s.numChildren() > 0 ? 'block' : 'none';
+            const d = s.val(); const list = document.getElementById('reportList');
+            if(!d) { list.innerHTML = `<div style="text-align:center;color:#555;">No Reports</div>`; return; }
+            let html = '';
+            Object.keys(d).forEach(k => {
+                html += `<div class="list-item" style="border-left:3px solid red; flex-direction:column; align-items:flex-start;">
+                    <div style="width:100%;display:flex;justify-content:space-between;"><b style="color:red">${d[k].movieName}</b><i class="fa-solid fa-check" style="color:green" onclick="db.ref('reports/${k}').remove()"></i></div>
+                    <small>${d[k].issue}</small>
+                </div>`;
+            });
+            list.innerHTML = html;
+        });
+    }
+
+    function loadRequests() {
+        db.ref('requests').on('value', s => {
+            document.getElementById('pendingRequests').innerText = s.numChildren();
+            const d = s.val(); const list = document.getElementById('requestList');
+            if(!d) { list.innerHTML = `<div style="text-align:center;color:#555;">No Requests</div>`; return; }
+            let html = '';
+            Object.keys(d).forEach(k => {
+                html += `<div class="list-item" style="border-left:3px solid gold; flex-direction:column; align-items:flex-start;">
+                    <div style="width:100%;display:flex;justify-content:space-between;"><b style="color:gold">${d[k].requestName}</b><i class="fa-solid fa-trash" style="color:red" onclick="db.ref('requests/${k}').remove()"></i></div>
+                    <small>${d[k].message}</small><small style="color:#aaa;font-size:10px">${d[k].date}</small>
+                </div>`;
+            });
+            list.innerHTML = html;
+        });
+    }
+
+    // --- UTILS ---
     function toggleTypeUI() {
         const isSeries = document.getElementById('mType').value === 'series';
         document.getElementById('seasonBox').style.display = isSeries ? 'block' : 'none';
         document.getElementById('epBox').style.display = isSeries ? 'block' : 'none';
     }
 
-    // --- LINK LOGIC ---
     function processLink() {
+        playSound('click');
         const url = document.getElementById('lLink').value;
         if(!url) return;
-
-        if(linkState === 0) { // DL
-            currentDL = url;
-            linkState = 1;
-            document.getElementById('linkLbl').innerText = "2. Paste Watch Link";
-            document.getElementById('linkLbl').style.color = "#00ff00";
-            document.getElementById('lLink').value = "";
-        } else { // WATCH
+        if(linkState === 0) { 
+            currentDL = url; linkState = 1;
+            document.getElementById('linkLbl').innerText = "2. Watch Link"; document.getElementById('linkLbl').style.color = "#00ff00"; document.getElementById('lLink').value = "";
+        } else { 
             let ep = document.getElementById('mType').value === 'series' ? parseInt(document.getElementById('epNum').value) : 0;
-            let qual = document.getElementById('lQual').value;
-            tempLinks.push({ dl: currentDL, watch: url, qual: qual, ep: ep });
+            tempLinks.push({ dl: currentDL, watch: url, qual: document.getElementById('lQual').value, ep: ep });
             if(ep > 0) document.getElementById('epNum').value = ep + 1;
             linkState = 0;
-            document.getElementById('linkLbl').innerText = "1. Paste Download Link";
-            document.getElementById('linkLbl').style.color = "var(--accent)";
-            document.getElementById('lLink').value = "";
+            document.getElementById('linkLbl').innerText = "1. Download Link"; document.getElementById('linkLbl').style.color = "var(--accent)"; document.getElementById('lLink').value = "";
             renderLinks();
         }
     }
+    function renderLinks() { document.getElementById('linkContainer').innerHTML = tempLinks.map((l, i) => `<div class="list-item"><span>${l.ep>0?'EP '+l.ep:'MOV'} • ${l.qual}</span><i class="fa-solid fa-trash" style="color:red" onclick="tempLinks.splice(${i},1);renderLinks()"></i></div>`).join(''); }
 
-    function renderLinks() {
-        document.getElementById('linkContainer').innerHTML = tempLinks.map((l, i) => `
-            <div class="list-item" style="border:1px solid var(--accent); margin-bottom:5px;">
-                <span>${l.ep > 0 ? 'EP '+l.ep : 'MOVIE'} • ${l.qual}</span>
-                <i class="fa-solid fa-trash" style="color:#ff0044" onclick="tempLinks.splice(${i},1);renderLinks()"></i>
-            </div>`).join('');
-    }
-
-    // --- PUBLISH ---
     function publish() {
+        playSound('success');
         const id = document.getElementById('editId').value || 'mov_'+Date.now();
         const data = {
             title: document.getElementById('mTitle').value,
             img: document.getElementById('posterPreview').src,
+            backdrop: document.getElementById('mBackdrop').value,
+            trailer: document.getElementById('mTrailer').value,
+            cast: document.getElementById('mCast').value,
+            isFeatured: document.getElementById('isFeatured').checked,
             type: document.getElementById('mType').value,
             season: document.getElementById('mSeason').value,
             lang: document.getElementById('mLang').value,
-            quality: document.getElementById('cardBadge').value,
+            quality: document.getElementById('cardBadge').value, // This ID might be 'cardBadge' or 'lQual' depending on your HTML. In Part 3 it is 'cardBadge' for poster quality.
             genre: document.getElementById('mGenre').value,
             desc: document.getElementById('mDesc').value,
-            notice: document.getElementById('mNotice').value, // NOTICE SAVED HERE
+            notice: document.getElementById('mNotice').value,
             links: tempLinks,
             timestamp: Date.now()
         };
@@ -299,23 +387,16 @@
 
     function renderDB() {
         db.ref('movies').once('value', s => {
-            const d = s.val();
-            let html = '';
-            if(d) {
-                Object.keys(d).forEach(k => {
-                    const m = d[k];
-                    html += `
-                        <div class="db-card" style="background:#0a0a0a; padding:15px; border-radius:20px; display:flex; gap:20px; align-items:center; border:1px solid #222; margin-bottom:15px;">
-                            <img src="${m.img}" style="width:60px; height:90px; border-radius:12px; object-fit:cover; border:1px solid #333;">
-                            <div style="flex:1">
-                                <b>${m.title}</b><br>
-                                <small style="color:var(--accent)">${m.lang} • ${m.quality}</small>
-                            </div>
-                            <i class="fa-solid fa-pen" style="color:var(--accent); cursor:pointer;" onclick="loadEdit('${k}')"></i>
-                            <i class="fa-solid fa-trash" style="color:red; cursor:pointer;" onclick="db.ref('movies/${k}').remove(); renderDB();"></i>
-                        </div>`;
-                });
-            }
+            const d = s.val(); let html = '';
+            if(d) Object.keys(d).forEach(k => {
+                const m = d[k];
+                html += `<div class="db-card" style="background:#111; padding:10px; margin-bottom:10px; display:flex; gap:10px; border-radius:10px;">
+                    <img src="${m.img}" style="width:40px; height:60px;">
+                    <div style="flex:1"><b>${m.title}</b><br><small>${m.lang} • ${m.type}</small></div>
+                    <i class="fa-solid fa-pen" style="color:var(--accent)" onclick="loadEdit('${k}')"></i>
+                    <i class="fa-solid fa-trash" style="color:red" onclick="db.ref('movies/${k}').remove(); renderDB();"></i>
+                </div>`;
+            });
             document.getElementById('dbList').innerHTML = html;
         });
     }
@@ -327,7 +408,15 @@
             document.getElementById('mTitle').value = m.title;
             document.getElementById('mDesc').value = m.desc;
             document.getElementById('mNotice').value = m.notice || "";
+            document.getElementById('mGenre').value = m.genre || "";
             document.getElementById('posterPreview').src = m.img;
+            document.getElementById('mBackdrop').value = m.backdrop || "";
+            if(document.getElementById('backdropPreview')) document.getElementById('backdropPreview').src = m.backdrop || "";
+            document.getElementById('mTrailer').value = m.trailer || "";
+            document.getElementById('mCast').value = m.cast || "";
+            document.getElementById('isFeatured').checked = m.isFeatured || false;
+            document.getElementById('mType').value = m.type;
+            toggleTypeUI();
             tempLinks = m.links || [];
             renderLinks();
             switchTab('upload');
@@ -335,22 +424,24 @@
     }
 
     function resetForm() {
-        document.getElementById('mTitle').value = "";
-        document.getElementById('mNotice').value = "";
-        document.getElementById('posterPreview').src = "";
-        tempLinks = []; renderLinks();
-        document.getElementById('editId').value = "";
+        document.getElementById('mTitle').value = ""; document.getElementById('posterPreview').src = ""; tempLinks = []; renderLinks(); document.getElementById('editId').value = "";
     }
+    
+    function backupDatabase() {
+        playSound('click');
+        db.ref('/').once('value', s => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(s.val()));
+            const node = document.createElement('a');
+            node.setAttribute("href", dataStr); node.setAttribute("download", "backup.json");
+            document.body.appendChild(node); node.click(); node.remove();
+        });
+    }
+    function openModal(t,c) { document.getElementById('modalDisplayTitle').innerText=t; document.getElementById('mBody').innerHTML=c; document.getElementById('masterModal').style.display='flex'; }
+    function closeModal() { document.getElementById('masterModal').style.display='none'; }
 
     window.onload = () => {
         db.ref('movies').on('value', s => document.getElementById('totalMovies').innerText = s.numChildren());
-        setInterval(() => document.getElementById('liveViews').innerText = Math.floor(Math.random() * 200) + 50, 3000);
+        db.ref('siteViews').on('value', s => document.getElementById('liveViews').innerText = s.val() || 0);
     };
-</script>
-</body>
-</html>
-
-
-
-
-
+    </script>
+    
