@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ PRITAM MASTER HUB (AUTO-FIXED)</title>
+    <title>🔒 SECURE MASTER HUB</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root { --bg: #000; --panel: #0a0a0a; --neon-rgb: linear-gradient(45deg, #ff0044, #00f3ff, #00ff00, #ff0044); --accent: #00f3ff; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; padding-top: 85px; overflow-x: hidden; scroll-behavior: smooth; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; padding-top: 85px; overflow-x: hidden; }
         * { box-sizing: border-box; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
-        /* RGB BORDER ANIMATION */
-        @keyframes rgbCycle { 
-            0% { background-position: 0% 50%; } 
-            100% { background-position: 200% 50%; } 
-        }
-        .rgb-border { position: relative; padding: 2px; border-radius: 30px; background: var(--neon-rgb); background-size: 200% 200%; animation: rgbCycle 4s linear infinite; box-shadow: 0 0 20px rgba(0, 243, 255, 0.1); }
+        /* LOGIN SYSTEM STYLES */
+        #loginScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle at center, #111 0%, #000 70%); }
+        .login-box { width: 350px; padding: 40px; background: rgba(10,10,10,0.8); border-radius: 30px; border: 1px solid #333; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 0 50px rgba(0, 243, 255, 0.1); }
+        .login-input { background: #000 !important; border: 1px solid #333 !important; text-align: center; letter-spacing: 2px; font-size: 18px; }
+
+        /* RGB ANIMATIONS */
+        @keyframes rgbCycle { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        .rgb-border { position: relative; padding: 2px; border-radius: 30px; background: var(--neon-rgb); background-size: 200% 200%; animation: rgbCycle 4s linear infinite; }
         .inner-panel { background: var(--panel); border-radius: 28px; padding: 30px; height: 100%; }
 
         /* NAV & LAYOUT */
@@ -26,142 +28,168 @@
         .nav-tab { color: #555; font-size: 26px; cursor: pointer; padding: 12px 30px; border-radius: 18px; }
         .nav-tab.active { color: var(--accent); background: rgba(0, 243, 255, 0.08); filter: drop-shadow(0 0 8px var(--accent)); }
 
-        /* INPUTS */
-        input, select, textarea { width: 100%; background: #000; border: 1.5px solid #222; color: #fff; padding: 16px; border-radius: 18px; margin-bottom: 20px; outline: none; font-size: 14px; font-weight: 600; }
+        /* COMMON INPUTS */
+        input, select, textarea { width: 100%; background: #050505; border: 1.5px solid #222; color: #fff; padding: 16px; border-radius: 18px; margin-bottom: 20px; outline: none; font-size: 14px; font-weight: 600; }
         input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
         label { font-size: 11px; color: #888; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 2px; }
 
-        /* INBUILT MODAL */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-card { background: #080808; width: 90%; max-width: 450px; border-radius: 40px; border: 2px solid var(--accent); overflow: hidden; box-shadow: 0 0 100px rgba(0, 243, 255, 0.2); animation: popIn 0.3s ease; }
+        .modal-card { background: #080808; width: 90%; max-width: 450px; border-radius: 40px; border: 2px solid var(--accent); overflow: hidden; }
+        
         .list-item { padding: 15px; background: #111; margin-bottom: 8px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; border: 1px solid transparent; }
         .list-item:hover { border-color: var(--accent); background: #161616; }
         
         .btn-neon { background: var(--accent); color: #000; border: none; padding: 18px; width: 100%; border-radius: 18px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .db-card { background: #0a0a0a; padding: 15px; border-radius: 20px; display: flex; gap: 20px; align-items: center; border: 1px solid #222; margin-bottom: 15px; }
-        .db-poster { width: 60px; height: 90px; border-radius: 12px; object-fit: cover; border: 1px solid #333; }
+        /* HIDDEN CONTENT UNTIL LOGIN */
+        #mainApp { display: none; }
     </style>
 </head>
 <body>
-    <div id="masterModal" class="modal-overlay">
-        <div class="modal-card">
-            <div id="modalDisplayTitle" style="padding:25px; background:#111; text-align:center; border-bottom:1px solid #222; color:var(--accent); font-weight:800; text-transform: uppercase;">NOTIFICATION</div>
-            <div id="mBody" style="max-height: 400px; overflow-y: auto; padding: 15px;"></div>
-            <div style="padding: 20px;"><button onclick="closeModal()" class="btn-neon">CLOSE</button></div>
-        </div>
+    <div id="loginScreen">
+        <div class="rgb-border"><div class="login-box">
+            <h2 style="margin-top:0; color:var(--accent);">SECURITY CHECK</h2>
+            <input type="text" id="usrInput" class="login-input" placeholder="USERNAME">
+            <input type="password" id="passInput" class="login-input" placeholder="PASSWORD">
+            <button onclick="checkLogin()" class="btn-neon" style="margin-top:10px;">UNLOCK PANEL</button>
+            <p id="loginMsg" style="color:red; font-size:12px; margin-top:10px;"></p>
+        </div></div>
     </div>
 
-    <div class="top-nav">
-        <div class="nav-tab active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i></div>
-        <div class="nav-tab" onclick="switchTab('upload')"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-        <div class="nav-tab" onclick="switchTab('database')"><i class="fa-solid fa-server"></i></div>
-        <div class="nav-tab" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i></div>
-    </div>
-
-    <div style="padding: 25px;">
-        <div id="dashboard" class="tab-content">
-            <h1 style="font-size:35px; margin-bottom:30px;">SERVER <span style="color:var(--accent);">ANALYTICS</span></h1>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                <div class="rgb-border"><div class="inner-panel">
-                    <label>Total Assets</label>
-                    <h2 id="totalMovies" style="font-size:50px; margin:0; color:#fff;">0</h2>
-                </div></div>
-                
-                <div class="rgb-border"><div class="inner-panel">
-                    <label>Live Traffic</label>
-                    <h2 id="liveViews" style="font-size:50px; margin:0; color:var(--accent);">0</h2>
-                </div></div>
+    <div id="mainApp">
+        <div id="masterModal" class="modal-overlay">
+            <div class="modal-card">
+                <div id="modalDisplayTitle" style="padding:25px; background:#111; text-align:center; border-bottom:1px solid #222; color:var(--accent); font-weight:800; text-transform: uppercase;">NOTIFICATION</div>
+                <div id="mBody" style="max-height: 400px; overflow-y: auto; padding: 15px;"></div>
+                <div style="padding: 20px;"><button onclick="closeModal()" class="btn-neon">CLOSE</button></div>
             </div>
         </div>
-        <div id="upload" class="tab-content" style="display:none;">
-            <div class="rgb-border" style="margin-bottom:30px;"><div class="inner-panel" style="padding:20px;">
-                <label>GLOBAL TMDB SEARCH</label>
-                <div style="display:flex; gap:15px;">
-                    <input type="text" id="tmdbQuery" placeholder="Search Movie / Series..." style="margin:0;">
-                    <button onclick="fetchTMDB()" style="background:var(--accent); color:#000; border:none; padding:0 30px; border-radius:15px; font-weight:800;">FETCH</button>
-                </div>
-            </div></div>
 
-            <div class="inner-panel" style="border:1px solid #222;">
-                <input type="hidden" id="editId">
+        <div class="top-nav">
+            <div class="nav-tab active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="nav-tab" onclick="switchTab('upload')"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <div class="nav-tab" onclick="switchTab('database')"><i class="fa-solid fa-server"></i></div>
+            <div class="nav-tab" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i></div>
+        </div>
+
+        <div style="padding: 25px;">
+            <div id="dashboard" class="tab-content">
+                <h1 style="font-size:35px; margin-bottom:30px;">SERVER <span style="color:var(--accent);">ANALYTICS</span></h1>
                 
-                <div style="display:grid; grid-template-columns: 110px 1fr; gap:25px;">
-                    <div>
-                        <img id="posterPreview" src="" style="width:100%; border-radius:15px; min-height:160px; background:#000; object-fit:cover; border:1px solid #333;">
-                        <select id="cardBadge" style="margin-top:15px; padding:10px;">
-                            <option>4K UHD</option><option>1080p FHD</option><option selected>720p HD</option>
-                        </select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="rgb-border"><div class="inner-panel">
+                        <label>Total Assets</label>
+                        <h2 id="totalMovies" style="font-size:50px; margin:0; color:#fff;">0</h2>
+                    </div></div>
+                    
+                    <div class="rgb-border"><div class="inner-panel">
+                        <label>Live Traffic</label>
+                        <h2 id="liveViews" style="font-size:50px; margin:0; color:var(--accent);">0</h2>
+                    </div></div>
+                </div>
+            </div>
+<div id="upload" class="tab-content" style="display:none;">
+                <div class="rgb-border" style="margin-bottom:30px;"><div class="inner-panel" style="padding:20px;">
+                    <label>GLOBAL TMDB SEARCH</label>
+                    <div style="display:flex; gap:15px;">
+                        <input type="text" id="tmdbQuery" placeholder="Search Movie / Series..." style="margin:0;">
+                        <button onclick="fetchTMDB()" style="background:var(--accent); color:#000; border:none; padding:0 30px; border-radius:15px; font-weight:800;">FETCH</button>
                     </div>
-                    <div>
-                        <label>Content Title (Auto)</label>
-                        <input type="text" id="mTitle" placeholder="Title auto-fills here...">
-                        
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                            <div>
-                                <label>Type</label>
-                                <select id="mType" onchange="toggleTypeUI()"><option value="movie">Movie</option><option value="series">Web Series</option></select>
-                            </div>
-                            <div id="seasonBox" style="display:none;">
-                                <label>Season</label>
-                                <input type="number" id="mSeason" value="1">
-                            </div>
+                </div></div>
+
+                <div class="inner-panel" style="border:1px solid #222;">
+                    <input type="hidden" id="editId">
+                    
+                    <div style="display:grid; grid-template-columns: 110px 1fr; gap:25px;">
+                        <div>
+                            <img id="posterPreview" src="" style="width:100%; border-radius:15px; min-height:160px; background:#000; object-fit:cover; border:1px solid #333;">
+                            <select id="cardBadge" style="margin-top:15px; padding:10px;">
+                                <option>4K UHD</option><option>1080p FHD</option><option selected>720p HD</option>
+                            </select>
                         </div>
+                        <div>
+                            <label>Content Title (Auto)</label>
+                            <input type="text" id="mTitle" placeholder="Title auto-fills here...">
+                            
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                <div>
+                                    <label>Type</label>
+                                    <select id="mType" onchange="toggleTypeUI()"><option value="movie">Movie</option><option value="series">Web Series</option></select>
+                                </div>
+                                <div id="seasonBox" style="display:none;">
+                                    <label>Season</label>
+                                    <input type="number" id="mSeason" value="1">
+                                </div>
+                            </div>
 
-                        <label>Language (20+ Dubbed)</label>
-                        <select id="mLang">
-                            <option>Dual Audio</option><option>Bangla Dubbed</option><option>Hindi Dubbed</option>
-                            <option>Tamil Dubbed</option><option>Telugu Dubbed</option><option>English Dubbed</option>
-                            <option>Korean Dubbed</option><option>Japanese Dubbed</option><option>Bengali Original</option><option>Hindi Original</option>
-                            <option>English Original</option><option>Tamil Original</option><option>Malayalam</option><option>Kannada</option><option>Marathi</option>
-                        </select>
+                            <label>Language (20+ Dubbed)</label>
+                            <select id="mLang">
+                                <option>Dual Audio</option><option>Bangla Dubbed</option><option>Hindi Dubbed</option>
+                                <option>Tamil Dubbed</option><option>Telugu Dubbed</option><option>English Dubbed</option>
+                                <option>Korean Dubbed</option><option>Japanese Dubbed</option><option>Bengali Original</option><option>Hindi Original</option>
+                                <option>English Original</option><option>Tamil Original</option><option>Malayalam</option><option>Kannada</option><option>Marathi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label style="margin-top:20px; color:#ffd700;">DETAILS PAGE NOTICE (YELLOW ALERT)</label>
+                    <input type="text" id="mNotice" placeholder="e.g. Next Episode Coming Next Week..." style="border-color:#ffd700;">
+
+                    <label>Description (Auto)</label>
+                    <textarea id="mDesc" style="height:100px;" placeholder="Synopsis auto-fills here..."></textarea>
+                    <input type="hidden" id="mGenre"><input type="hidden" id="mRating">
+
+                    <div style="background:#000; border:2px dashed var(--accent); padding:20px; border-radius:20px; margin-top:20px;">
+                        <div style="display:grid; grid-template-columns: 70px 1fr 1fr 50px; gap:10px; align-items:end;">
+                            <div id="epBox" style="display:none;"><label>EP</label><input type="number" id="epNum" value="1" style="margin:0;"></div>
+                            <div><label>Quality</label><select id="lQual" style="margin:0;"><option>720p</option><option>1080p</option><option>4K</option></select></div>
+                            <div><label id="linkLbl" style="color:var(--accent)">1. Download Link</label><input type="text" id="lLink" style="margin:0;"></div>
+                            <button onclick="processLink()" class="btn-neon" style="padding:12px; border-radius:12px;"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div id="linkContainer" style="margin-top:20px;"></div>
+                    <div style="display:flex; gap:15px; margin-top:30px;">
+                        <button onclick="resetForm()" class="btn-neon" style="background:#222; color:#fff;">RESET</button>
+                        <button onclick="publish()" class="btn-neon">PUBLISH</button>
                     </div>
                 </div>
-
-                <label style="margin-top:15px;">Description (Auto)</label>
-                <textarea id="mDesc" style="height:100px;" placeholder="Synopsis auto-fills here..."></textarea>
-                <input type="hidden" id="mGenre"><input type="hidden" id="mRating">
-
-                <div style="background:#000; border:2px dashed var(--accent); padding:20px; border-radius:20px; margin-top:20px;">
-                    <div style="display:grid; grid-template-columns: 70px 1fr 1fr 50px; gap:10px; align-items:end;">
-                        <div id="epBox" style="display:none;"><label>EP</label><input type="number" id="epNum" value="1" style="margin:0;"></div>
-                        <div><label>Quality</label><select id="lQual" style="margin:0;"><option>720p</option><option>1080p</option><option>4K</option></select></div>
-                        <div><label id="linkLbl" style="color:var(--accent)">1. Download Link</label><input type="text" id="lLink" style="margin:0;"></div>
-                        <button onclick="processLink()" class="btn-neon" style="padding:12px; border-radius:12px;"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                </div>
-                
-                <div id="linkContainer" style="margin-top:20px;"></div>
-                <div style="display:flex; gap:15px; margin-top:30px;">
-                    <button onclick="resetForm()" class="btn-neon" style="background:#222; color:#fff;">RESET</button>
-                    <button onclick="publish()" class="btn-neon">PUBLISH</button>
-                </div>
+</div>
+<div id="database" class="tab-content" style="display:none;">
+                <div class="rgb-border"><div class="inner-panel">
+                    <input type="text" id="dbSearch" placeholder="Search Database..." onkeyup="renderDB()">
+                    <div id="dbList" style="margin-top:20px;"></div>
+                </div></div>
             </div>
-        </div>
-        <div id="database" class="tab-content" style="display:none;">
-            <div class="rgb-border"><div class="inner-panel">
-                <input type="text" id="dbSearch" placeholder="Search Database..." onkeyup="renderDB()">
-                <div id="dbList" style="margin-top:20px;"></div>
-            </div></div>
-        </div>
 
-        <div id="settings" class="tab-content" style="display:none;">
-            <h1>GLOBAL CONTROL</h1>
-            <div class="inner-panel" style="border:1px solid #333;">
-                <label>Popup Text</label>
-                <input type="text" id="sitePopup">
-                <button onclick="saveSettings()" class="btn-neon">SAVE</button>
+            <div id="settings" class="tab-content" style="display:none;">
+                <h1>GLOBAL CONTROL</h1>
+                <div class="inner-panel" style="border:1px solid #333;">
+                    <label>App Popup Text</label>
+                    <input type="text" id="sitePopup">
+                    <button onclick="saveSettings()" class="btn-neon">SAVE</button>
+                </div>
             </div>
         </div>
     </div>
-    <script>
+<script>
     const config = { apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI", databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com" };
     firebase.initializeApp(config);
     const db = firebase.database();
     
     let movies = [], tempLinks = [], linkState = 0, currentDL = "";
+
+    // LOGIN SYSTEM
+    function checkLogin() {
+        const u = document.getElementById('usrInput').value;
+        const p = document.getElementById('passInput').value;
+        if(u === "pritam" && p === "2026") {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        } else {
+            document.getElementById('loginMsg').innerText = "WRONG CREDENTIALS! ACCESS DENIED.";
+        }
+    }
 
     function switchTab(t) { 
         document.querySelectorAll('.tab-content').forEach(e=>e.style.display='none'); 
@@ -172,7 +200,6 @@
     }
 
     function openModal(title, content) {
-        // FIX: Using new ID for modal title so it doesn't conflict with input
         document.getElementById('modalDisplayTitle').innerText = title; 
         document.getElementById('mBody').innerHTML = content;
         document.getElementById('masterModal').style.display = 'flex';
@@ -198,13 +225,12 @@
         } catch(e) { alert("Check Internet/VPN"); }
     }
 
-    // --- AUTO FILL LOGIC (NOW WORKS!) ---
+    // --- AUTO FILL ---
     async function syncData(type, id) {
         closeModal();
         const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&language=en-US`);
         const i = await res.json();
         
-        // NO MORE CONFLICT - THIS WILL WORK 100%
         document.getElementById('mTitle').value = i.title || i.name;
         document.getElementById('mDesc').value = i.overview || "";
         document.getElementById('posterPreview').src = `https://image.tmdb.org/t/p/w500${i.poster_path}`;
@@ -252,7 +278,7 @@
             </div>`).join('');
     }
 
-    // --- PUBLISH & DB ---
+    // --- PUBLISH ---
     function publish() {
         const id = document.getElementById('editId').value || 'mov_'+Date.now();
         const data = {
@@ -264,6 +290,7 @@
             quality: document.getElementById('cardBadge').value,
             genre: document.getElementById('mGenre').value,
             desc: document.getElementById('mDesc').value,
+            notice: document.getElementById('mNotice').value, // NOTICE SAVED HERE
             links: tempLinks,
             timestamp: Date.now()
         };
@@ -278,8 +305,8 @@
                 Object.keys(d).forEach(k => {
                     const m = d[k];
                     html += `
-                        <div class="db-card">
-                            <img src="${m.img}" class="db-poster">
+                        <div class="db-card" style="background:#0a0a0a; padding:15px; border-radius:20px; display:flex; gap:20px; align-items:center; border:1px solid #222; margin-bottom:15px;">
+                            <img src="${m.img}" style="width:60px; height:90px; border-radius:12px; object-fit:cover; border:1px solid #333;">
                             <div style="flex:1">
                                 <b>${m.title}</b><br>
                                 <small style="color:var(--accent)">${m.lang} • ${m.quality}</small>
@@ -298,6 +325,8 @@
             const m = s.val();
             document.getElementById('editId').value = id;
             document.getElementById('mTitle').value = m.title;
+            document.getElementById('mDesc').value = m.desc;
+            document.getElementById('mNotice').value = m.notice || "";
             document.getElementById('posterPreview').src = m.img;
             tempLinks = m.links || [];
             renderLinks();
@@ -307,6 +336,7 @@
 
     function resetForm() {
         document.getElementById('mTitle').value = "";
+        document.getElementById('mNotice').value = "";
         document.getElementById('posterPreview').src = "";
         tempLinks = []; renderLinks();
         document.getElementById('editId').value = "";
@@ -316,5 +346,11 @@
         db.ref('movies').on('value', s => document.getElementById('totalMovies').innerText = s.numChildren());
         setInterval(() => document.getElementById('liveViews').innerText = Math.floor(Math.random() * 200) + 50, 3000);
     };
-               </script>
-               
+</script>
+</body>
+</html>
+
+
+
+
+
