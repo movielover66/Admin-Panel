@@ -4,67 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚡ GOD MODE MASTER HUB</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Outfit:wght@400;900&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --bg: #050505; --panel: #0a0a0a; --neon-rgb: linear-gradient(45deg, #ff0044, #00f3ff, #00ff00, #ff0044); --accent: #00f3ff; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; padding-top: 85px; overflow-x: hidden; scroll-behavior: smooth; }
-        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        :root { --bg: #000; --panel: #0a0a0a; --cyan: #00f3ff; --red: #ff0044; --gold: #ffd700; --neon: linear-gradient(45deg, #ff0044, #00f3ff, #00ff00, #ff0044); }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; padding-top: 85px; overflow-x: hidden; }
+        * { box-sizing: border-box; transition: 0.2s; }
 
-        /* RGB ANIMATION */
-        @keyframes rgbCycle { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-        .rgb-border { position: relative; padding: 2px; border-radius: 30px; background: var(--neon-rgb); background-size: 200% 200%; animation: rgbCycle 4s linear infinite; }
-        .inner-panel { background: var(--panel); border-radius: 28px; padding: 30px; height: 100%; }
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-card { background: #050505; width: 90%; max-width: 400px; border-radius: 25px; border: 2px solid var(--cyan); box-shadow: 0 0 50px rgba(0, 243, 255, 0.15); overflow: hidden; text-align: center; }
+        .modal-header { padding: 20px; font-family: 'Rajdhani'; font-size: 22px; color: var(--cyan); font-weight: 800; border-bottom: 1px solid #222; }
+        .modal-body { padding: 25px; max-height: 50vh; overflow-y: auto; color: #ccc; font-size: 14px; }
+        .modal-footer { padding: 20px; display: flex; gap: 10px; justify-content: center; }
+        .btn-cyan { background: var(--cyan); color: #000; padding: 12px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .btn-cancel { background: transparent; border: 2px solid #333; color: #888; }
 
-        /* FEATURED TOGGLE SWITCH */
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; background: #111; padding: 15px; border-radius: 15px; border: 1px solid #333; margin-top: 15px; }
-        .switch { position: relative; display: inline-block; width: 60px; height: 30px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 30px; }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        input:checked + .slider:before { transform: translateX(30px); }
+        /* RGB BORDER */
+        .rgb-border { position: relative; padding: 2px; border-radius: 30px; background: var(--neon); background-size: 200% 200%; animation: rgb 4s linear infinite; margin-bottom: 20px; }
+        @keyframes rgb { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        .inner-panel { background: var(--panel); border-radius: 28px; padding: 25px; height: 100%; }
 
-        /* INPUTS & BUTTONS */
-        input, select, textarea { width: 100%; background: #000; border: 1.5px solid #222; color: #fff; padding: 16px; border-radius: 18px; margin-bottom: 20px; outline: none; font-size: 14px; font-weight: 600; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
-        .btn-neon { background: var(--accent); color: #000; border: none; padding: 18px; width: 100%; border-radius: 18px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-neon:active { transform: scale(0.95); }
-
-        /* LOGIN & MODAL */
-        #loginScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; align-items: center; justify-content: center; }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-card { background: #080808; width: 90%; max-width: 450px; border-radius: 40px; border: 2px solid var(--accent); overflow: hidden; box-shadow: 0 0 80px rgba(0, 243, 255, 0.2); }
+        /* INPUTS */
+        input, select, textarea { width: 100%; background: #000; border: 1.5px solid #222; color: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-weight: 600; }
+        input:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
         
-        /* LOGS */
-        .log-item { padding: 10px; border-bottom: 1px solid #222; font-size: 11px; font-family: monospace; color: #aaa; }
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; background: #111; padding: 12px; border-radius: 12px; margin-bottom: 15px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 30px; }
+        input:checked + .slider { background-color: var(--cyan); }
+        input:checked + .slider:before { content: ""; position: absolute; height: 18px; width: 18px; left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%; transform: translateX(24px); }
 
-        .top-nav { position: fixed; top: 0; left: 0; width: 100%; height: 85px; background: rgba(5,5,5,0.95); border-bottom: 1px solid #222; display: flex; align-items: center; justify-content: space-around; z-index: 5000; backdrop-filter: blur(20px); }
-        .nav-tab { color: #555; font-size: 26px; cursor: pointer; padding: 12px 30px; border-radius: 18px; }
-        .nav-tab.active { color: var(--accent); background: rgba(0, 243, 255, 0.08); filter: drop-shadow(0 0 8px var(--accent)); }
+        /* NAV */
+        .top-nav { position: fixed; top: 0; left: 0; width: 100%; height: 80px; background: rgba(0,0,0,0.9); border-bottom: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 5000; backdrop-filter: blur(15px); }
+        .nav-tab { font-size: 24px; color: #555; cursor: pointer; padding: 10px 20px; border-radius: 15px; position: relative; }
+        .nav-tab.active { color: var(--cyan); background: rgba(0, 243, 255, 0.1); }
+        .list-item { padding: 12px; background: #111; margin-bottom: 8px; border-radius: 12px; border: 1px solid #222; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        
+        #loginScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; align-items: center; justify-content: center; }
         #mainApp { display: none; }
     </style>
 </head>
 <body>
     <div id="loginScreen">
         <div class="rgb-border"><div class="inner-panel" style="text-align:center; width:320px;">
-            <h2 style="color:var(--accent); font-family:'Rajdhani';">SYSTEM LOCKED</h2>
-            <input type="text" id="usrInput" placeholder="USER ID" style="text-align:center;">
-            <input type="password" id="passInput" placeholder="ACCESS CODE" style="text-align:center;">
-            <button onclick="checkLogin()" class="btn-neon">UNLOCK CORE</button>
-            <p id="loginMsg" style="color:red; font-size:11px; margin-top:10px;"></p>
+            <h2 style="color:var(--cyan); font-family:'Rajdhani';">SECURE ACCESS</h2>
+            <input type="text" id="usrInput" placeholder="USERNAME" style="text-align:center;">
+            <input type="password" id="passInput" placeholder="PASSWORD" style="text-align:center;">
+            <button onclick="checkLogin()" class="btn-cyan">UNLOCK</button>
+            <p id="loginMsg" style="color:red; font-size:12px; margin-top:10px;"></p>
         </div></div>
     </div>
 
     <div id="mainApp">
         <div id="masterModal" class="modal-overlay">
             <div class="modal-card">
-                <div id="modalDisplayTitle" style="padding:25px; background:#111; text-align:center; border-bottom:1px solid #222; color:var(--accent); font-weight:800;">NOTIFICATION</div>
-                <div id="mBody" style="max-height: 400px; overflow-y: auto; padding: 15px;"></div>
-                <div style="padding: 20px;"><button onclick="closeModal()" class="btn-neon">CLOSE</button></div>
+                <div id="modalTitle" class="modal-header">NOTIFICATION</div>
+                <div id="modalBody" class="modal-body"></div>
+                <div class="modal-footer"><button onclick="closeModal()" class="btn-cyan">CLOSE</button></div>
+            </div>
+        </div>
+        <div id="confirmModal" class="modal-overlay">
+            <div class="modal-card" style="border-color:var(--red);">
+                <div class="modal-header" style="color:var(--red);">CONFIRM ACTION</div>
+                <div id="confirmBody" class="modal-body">Are you sure?</div>
+                <div class="modal-footer">
+                    <button onclick="closeConfirm()" class="btn-cyan btn-cancel" style="width:auto;">CANCEL</button>
+                    <button id="confirmBtnAction" class="btn-cyan" style="background:var(--red); color:#fff; width:auto;">CONFIRM</button>
+                </div>
             </div>
         </div>
 
@@ -72,128 +85,94 @@
             <div class="nav-tab active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i></div>
             <div class="nav-tab" onclick="switchTab('inbox')">
                 <i class="fa-solid fa-bell"></i>
-                <span id="notifBadge" style="position:absolute; top:15px; right:25px; width:8px; height:8px; background:red; border-radius:50%; display:none;"></span>
+                <span id="notifBadge" style="position:absolute; top:12px; right:15px; width:8px; height:8px; background:red; border-radius:50%; display:none;"></span>
             </div>
             <div class="nav-tab" onclick="switchTab('upload')"><i class="fa-solid fa-cloud-arrow-up"></i></div>
             <div class="nav-tab" onclick="switchTab('database')"><i class="fa-solid fa-server"></i></div>
             <div class="nav-tab" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i></div>
         </div>
 
-        <div style="padding: 25px;">
+        <div style="padding: 20px;">
             <div id="dashboard" class="tab-content">
-                <h1 style="font-family:'Rajdhani'; font-size:35px;">COMMAND <span style="color:var(--accent);">CENTER</span></h1>
-                
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div class="rgb-border"><div class="inner-panel">
-                        <label>Total Assets</label>
-                        <h2 id="totalMovies" style="font-size:50px; margin:0; color:#fff;">0</h2>
-                    </div></div>
-                    <div class="rgb-border"><div class="inner-panel">
-                        <label>Live Traffic</label>
-                        <h2 id="liveViews" style="font-size:50px; margin:0; color:var(--accent);">0</h2>
-                    </div></div>
-                </div>
-
-                <div class="rgb-border" style="margin-top:25px; border-color:#ff0044 !important;">
-                    <div class="inner-panel" style="background:#000; border:1px solid #333; min-height:200px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px;">
-                            <label style="margin:0; color:#ff0044;"><i class="fa-solid fa-terminal"></i> SYSTEM ERROR LOGS</label>
-                            <button onclick="clearErrors()" style="background:transparent; border:1px solid #333; color:#555; padding:5px;">CLEAR</button>
-                        </div>
-                        <div id="systemTerminal" style="font-family:monospace; font-size:12px; height:150px; overflow-y:auto; margin-top:10px; color:#00ff00;">
-                            > System Status: Stable.
-                        </div>
+                <h1 style="font-family:'Rajdhani';">DASHBOARD</h1>
+                <div class="rgb-border" style="margin-bottom:20px; border-color:#00ff00 !important;" id="healthBorder">
+                    <div class="inner-panel" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                        <div><label style="margin:0; font-size:12px;">SITE STATUS</label><h2 id="siteHealthText" style="margin:0; color:#00ff00;">ONLINE & STABLE</h2></div>
+                        <i id="healthIcon" class="fa-solid fa-heart-pulse" style="font-size:30px; color:#00ff00;"></i>
                     </div>
                 </div>
-
-                <div style="margin-top:20px; display:flex; gap:20px;">
-                    <div class="inner-panel" style="border:1px solid #333; flex:1;">
-                        <label style="color:red;">Pending Reports</label>
-                        <h2 id="pendingReports" style="margin:0;">0</h2>
-                    </div>
-                    <div class="inner-panel" style="border:1px solid #333; flex:1;">
-                        <label style="color:#ffd700;">New Requests</label>
-                        <h2 id="pendingRequests" style="margin:0;">0</h2>
-                    </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <div class="rgb-border"><div class="inner-panel"><label>Total Content</label><h2 id="totalMovies" style="font-size:40px; margin:0;">0</h2></div></div>
+                    <div class="rgb-border"><div class="inner-panel"><label>Reports</label><h2 id="pendingReports" style="font-size:40px; margin:0; color:var(--red);">0</h2></div></div>
                 </div>
             </div>
-<div id="upload" class="tab-content" style="display:none;">
-                <div class="rgb-border" style="margin-bottom:30px;"><div class="inner-panel" style="padding:20px;">
-                    <label>GLOBAL TMDB SEARCH</label>
-                    <div style="display:flex; gap:15px;">
-                        <input type="text" id="tmdbQuery" placeholder="Search Movie / Series..." style="margin:0;">
-                        <button onclick="fetchTMDB()" style="background:var(--accent); color:#000; border:none; padding:0 30px; border-radius:15px; font-weight:800;">FETCH</button>
+
+            <div id="upload" class="tab-content" style="display:none;">
+                <div class="rgb-border" style="margin-bottom:20px;"><div class="inner-panel">
+                    <label>TMDB SEARCH</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="tmdbQuery" placeholder="Movie Name..." style="margin:0;">
+                        <button onclick="fetchTMDB()" class="btn-cyan" style="width:auto; padding:0 25px;">SEARCH</button>
                     </div>
                 </div></div>
 
                 <div class="inner-panel" style="border:1px solid #222;">
                     <input type="hidden" id="editId">
-                    
-                    <div style="display:grid; grid-template-columns: 110px 1fr; gap:25px;">
+                    <div style="display:grid; grid-template-columns: 100px 1fr; gap:20px;">
                         <div>
-                            <img id="posterPreview" src="" style="width:100%; border-radius:15px; min-height:160px; background:#000; object-fit:cover; border:1px solid #333;">
-                            
-                            <div class="toggle-container">
-                                <label style="margin:0; font-size:9px;">FEATURED?</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="isFeatured">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-
-                            <label style="margin-top:10px; font-size:10px;">BACKDROP</label>
-                            <img id="backdropPreview" src="" style="width:100%; height:60px; border-radius:10px; object-fit:cover; border:1px solid #333;">
-                            
-                            <select id="cardBadge" style="margin-top:15px; padding:10px;">
-                                <option>4K UHD</option><option>1080p FHD</option><option selected>720p HD</option>
+                            <img id="posterPreview" src="" style="width:100%; border-radius:10px; min-height:150px; background:#111; object-fit:cover;">
+                            <label style="margin-top:10px; font-size:10px; color:var(--cyan);">QUALITY</label>
+                            <select id="cardBadge" style="padding:5px; margin-bottom:5px;">
+                                <option value="4K">4K UHD</option><option value="1080p">1080p FHD</option><option value="720p" selected>720p HD</option>
+                                <option value="HD">HD Rip</option><option value="CAM">CAMRip</option>
                             </select>
+                            <div class="toggle-container" style="margin-top:5px;">
+                                <label style="margin:0; font-size:9px;">FEATURED</label>
+                                <label class="switch"><input type="checkbox" id="isFeatured"><span class="slider"></span></label>
+                            </div>
                         </div>
                         <div>
-                            <label>Content Title</label>
-                            <input type="text" id="mTitle" placeholder="Title auto-fills here...">
-                            
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                                <div><label>Trailer (Auto)</label><input type="text" id="mTrailer" placeholder="YouTube URL..."></div>
-                                <div><label>Cast (Auto)</label><input type="text" id="mCast" placeholder="Actors..."></div>
+                            <label>Title</label><input type="text" id="mTitle">
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                <div><label>Trailer</label><input type="text" id="mTrailer"></div>
+                                <div><label>Cast</label><input type="text" id="mCast"></div>
                             </div>
-
-                            <label style="color:#00ff00;">GENRES</label>
-                            <input type="text" id="mGenre" style="border-color:#00ff00;">
-
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                            <label style="color:#00ff00;">Genres</label><input type="text" id="mGenre" style="border-color:#00ff00;">
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                                 <div><label>Type</label><select id="mType" onchange="toggleTypeUI()"><option value="movie">Movie</option><option value="series">Web Series</option></select></div>
                                 <div id="seasonBox" style="display:none;"><label>Season</label><input type="number" id="mSeason" value="1"></div>
                             </div>
-                            
-                            <label>Language</label>
-                            <select id="mLang"><option>Dual Audio</option><option>Hindi Dubbed</option><option>Bangla Dubbed</option><option>English Original</option></select>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                <div><label>Lang</label><select id="mLang"><option>Dual Audio</option><option>Hindi</option><option>English</option><option>Bangla</option></select></div>
+                                <div><label>Rating</label><input type="number" id="mRating" step="0.1" placeholder="8.5"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <input type="hidden" id="mBackdrop"> <input type="hidden" id="mRating">
-                    <label style="margin-top:15px; color:#ffd700;">DETAILS NOTICE</label>
-                    <input type="text" id="mNotice" placeholder="Yellow Alert Note..." style="border-color:#ffd700;">
+                    <input type="hidden" id="mBackdrop">
+                    <label style="color:var(--gold); margin-top:15px;">DETAILS NOTICE</label>
+                    <input type="text" id="mNotice" placeholder="Yellow Alert..." style="border-color:var(--gold);">
+                    <label>Description</label><textarea id="mDesc" style="height:70px;"></textarea>
 
-                    <label>Description</label>
-                    <textarea id="mDesc" style="height:80px;"></textarea>
-
-                    <div style="background:#000; border:2px dashed var(--accent); padding:20px; border-radius:20px; margin-top:20px;">
-                        <div style="display:grid; grid-template-columns: 70px 1fr 1fr 50px; gap:10px; align-items:end;">
-                            <div id="epBox" style="display:none;"><label>EP</label><input type="number" id="epNum" value="1" style="margin:0;"></div>
-                            <div><label>Quality</label><select id="lQual" style="margin:0;"><option>720p</option><option>1080p</option><option>4K</option></select></div>
-                            <div><label id="linkLbl" style="color:var(--accent)">1. Download Link</label><input type="text" id="lLink" style="margin:0;"></div>
-                            <button onclick="processLink()" class="btn-neon" style="padding:12px; border-radius:12px;"><i class="fa-solid fa-plus"></i></button>
+                    <div style="background:#000; border:2px dashed var(--cyan); padding:15px; border-radius:15px; margin-top:15px;">
+                        <div style="display:grid; grid-template-columns: 50px 70px 80px 1fr 40px; gap:8px; align-items:end;">
+                            <div id="epBox" style="display:none;"><label>EP</label><input type="number" id="epNum" value="1" style="margin:0; padding:10px;"></div>
+                            <div><label>Res</label><select id="lQual" style="margin:0; padding:10px;"><option>720p</option><option>1080p</option><option>4K</option></select></div>
+                            <div><label style="color:orange;">Size</label><input type="text" id="lSize" placeholder="1.2GB" style="margin:0; padding:10px;"></div>
+                            <div><label id="linkLbl" style="color:var(--cyan)">Link</label><input type="text" id="lLink" style="margin:0; padding:10px;"></div>
+                            <button onclick="processLink()" class="btn-cyan" style="padding:10px; border-radius:10px;"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
-                    
-                    <div id="linkContainer" style="margin-top:20px;"></div>
-                    <div style="display:flex; gap:15px; margin-top:30px;">
-                        <button onclick="resetForm()" class="btn-neon" style="background:#222; color:#fff;">RESET</button>
-                        <button onclick="publish()" class="btn-neon">PUBLISH</button>
+                    <div id="linkContainer" style="margin-top:15px;"></div>
+
+                    <div style="display:flex; gap:15px; margin-top:25px;">
+                        <button onclick="triggerReset()" class="btn-cyan" style="background:transparent; border:2px solid #555; color:#aaa;">RESET</button>
+                        <button onclick="publish()" class="btn-cyan">PUBLISH</button>
                     </div>
                 </div>
-</div>
-<div id="database" class="tab-content" style="display:none;">
+            </div>
+
+            <div id="database" class="tab-content" style="display:none;">
                 <div class="rgb-border"><div class="inner-panel">
                     <input type="text" id="dbSearch" placeholder="Search Database..." onkeyup="renderDB()">
                     <div id="dbList" style="margin-top:20px;"></div>
@@ -201,240 +180,238 @@
             </div>
 
             <div id="inbox" class="tab-content" style="display:none;">
-                <h1>USER <span style="color:var(--accent);">FEEDBACK</span></h1>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px;">
-                    <div class="rgb-border" style="border-color:red !important; box-shadow:0 0 15px rgba(255,0,0,0.2) !important;">
-                        <div class="inner-panel">
-                            <label style="color:#ff4444;">BROKEN LINKS</label>
-                            <div id="reportList" style="height:400px; overflow-y:auto; margin-top:15px;"></div>
-                        </div>
+                <h1>USER <span style="color:var(--cyan);">FEEDBACK</span></h1>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="rgb-border" style="border-color:var(--red) !important;">
+                        <div class="inner-panel"><label style="color:var(--red);">REPORTS</label><div id="reportList" style="height:400px; overflow-y:auto; margin-top:10px;"></div></div>
                     </div>
-                    <div class="rgb-border" style="border-color:#ffd700 !important; box-shadow:0 0 15px rgba(255,215,0,0.2) !important;">
-                        <div class="inner-panel">
-                            <label style="color:#ffd700;">REQUESTS</label>
-                            <div id="requestList" style="height:400px; overflow-y:auto; margin-top:15px;"></div>
-                        </div>
+                    <div class="rgb-border" style="border-color:var(--gold) !important;">
+                        <div class="inner-panel"><label style="color:var(--gold);">REQUESTS</label><div id="requestList" style="height:400px; overflow-y:auto; margin-top:10px;"></div></div>
                     </div>
                 </div>
             </div>
 
             <div id="settings" class="tab-content" style="display:none;">
-                <h1>SYSTEM <span style="color:var(--accent);">CONTROL</span></h1>
-                
+                <h1>CONTROL</h1>
                 <div class="rgb-border" style="margin-bottom:20px; border-color:#ff00ff !important;"><div class="inner-panel">
-                    <label style="color:#ff00ff;">DEBUG TOOLS</label>
-                    <button onclick="generateDemoData()" class="btn-neon" style="background:#ff00ff; color:#fff;">GENERATE DEMO DATA</button>
-                    <small style="color:#888; display:block; margin-top:5px;">*Click this if Inbox shows "undefined"</small>
+                    <button onclick="generateDemoData()" class="btn-cyan" style="background:#ff00ff; color:#fff;">GENERATE DEMO DATA (FIX)</button>
                 </div></div>
-
-                <div class="rgb-border" style="margin-bottom:20px;"><div class="inner-panel">
-                    <label>DATABASE BACKUP</label>
-                    <button onclick="backupDatabase()" class="btn-neon" style="background:#00ff00; color:#000;">DOWNLOAD JSON BACKUP</button>
+                <div class="rgb-border"><div class="inner-panel">
+                    <button onclick="backupDatabase()" class="btn-cyan" style="background:#00ff00; color:#000;">BACKUP DATABASE</button>
                 </div></div>
-
-                <div class="inner-panel" style="border:1px solid #333;">
-                    <label>ADMIN ACTIVITY LOGS</label>
-                    <div id="activityLogs" style="height:200px; overflow-y:auto; background:#000; padding:10px; border-radius:10px; border:1px solid #222;"></div>
-                    <label style="margin-top:20px;">Popup Text</label>
-                    <input type="text" id="sitePopup">
-                    <button onclick="saveSettings()" class="btn-neon">SAVE CONFIG</button>
-                </div>
             </div>
         </div>
     </div>
 <script>
+    // 1. CONFIGURATION
     const config = { apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI", databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com" };
     firebase.initializeApp(config);
     const db = firebase.database();
     
+    const tmdbKey = "15d2ea6d0dc1d476efbca3eba2b9bbfb"; 
     let movies = [], tempLinks = [], linkState = 0, currentDL = "";
-
-    // SOUNDS
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playSound(type) {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination); const now = audioCtx.currentTime;
-        if (type === 'click') { osc.frequency.setValueAtTime(1000, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); }
-        if (type === 'success') { osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(800, now + 0.1); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); }
-        if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); }
-    }
 
-    // LOGIN
+    // 2. LOGIN
     function checkLogin() {
-        const u = document.getElementById('usrInput').value.trim().toLowerCase();
+        const u = document.getElementById('usrInput').value.trim();
         const p = document.getElementById('passInput').value.trim();
         if(u === "pritam" && p === "2026") {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             playSound('success');
-            setTimeout(() => { loadReports(); loadRequests(); loadSystemErrors(); loadLogs(); }, 500);
+            setTimeout(() => { try{loadReports();loadRequests();loadSystemErrors();}catch(e){} }, 500);
         } else {
-            document.getElementById('loginMsg').innerText = "WRONG CREDENTIALS!";
+            document.getElementById('loginMsg').innerText = "ACCESS DENIED";
             playSound('error');
         }
     }
 
-    // --- FIX: INBOX LOADERS (NO MORE UNDEFINED) ---
-    function loadReports() {
-        db.ref('reports').on('value', s => {
-            document.getElementById('pendingReports').innerText = s.numChildren();
-            document.getElementById('notifBadge').style.display = s.numChildren() > 0 ? 'block' : 'none';
+    // 3. REPORTS LOADER (MATCHING YOUR SITE)
+    function loadReports() { 
+        db.ref('reports').on('value', s => { 
             const d = s.val(); 
-            const list = document.getElementById('reportList');
-            
-            if(!d) { 
-                list.innerHTML = `<div style="text-align:center;color:#555;padding:20px;">No Reports Found</div>`; 
-                return; 
-            }
-
-            let html = '';
-            Object.keys(d).forEach(k => {
-                const r = d[k];
-                // SAFE CHECK: If data is missing, show fallback text
-                const name = r.movieName || r.title || "Unknown Title";
-                const issue = r.issue || r.msg || "No details provided";
-                const time = r.time || "Just now";
-
-                html += `
-                <div class="list-item" style="border-left:3px solid red; flex-direction:column; align-items:flex-start;">
-                    <div style="width:100%;display:flex;justify-content:space-between;">
-                        <b style="color:#ff4444;">${name}</b>
-                        <i class="fa-solid fa-check" style="color:#00ff00; cursor:pointer;" onclick="db.ref('reports/${k}').remove()"></i>
-                    </div>
-                    <small style="color:#ccc;">Issue: ${issue}</small>
-                    <small style="color:#555; font-size:9px; margin-top:5px;">${time}</small>
-                </div>`;
-            });
-            list.innerHTML = html;
-        });
+            const count = s.numChildren();
+            document.getElementById('pendingReports').innerText = count; 
+            document.getElementById('notifBadge').style.display = count > 0 ? 'block' : 'none';
+            let h = ''; 
+            if(d) Object.keys(d).reverse().forEach(k => { 
+                const i = d[k];
+                // KEYS: movie, link, time (FROM YOUR INDEX.HTML)
+                const name = i.movie || "Unknown Movie"; 
+                const issue = i.link || "Broken Link";
+                const time = i.time || "Just Now";
+                h += `<div class="list-item" style="border-left:3px solid var(--red);flex-direction:column;align-items:flex-start;">
+                    <div style="width:100%;display:flex;justify-content:space-between;"><b style="color:var(--red)">${name}</b><i class="fa-solid fa-check" style="color:green" onclick="delItem('reports/${k}')"></i></div>
+                    <small style="color:#ccc;word-break:break-all;">${issue}</small>
+                    <small style="color:#555;font-size:9px;margin-top:5px;">${time}</small></div>`; 
+            }); 
+            document.getElementById('reportList').innerHTML = h || '<div style="text-align:center;color:#555;padding:20px;">No Reports</div>'; 
+        }); 
     }
 
-    function loadRequests() {
-        db.ref('requests').on('value', s => {
-            document.getElementById('pendingRequests').innerText = s.numChildren();
-            const d = s.val(); 
-            const list = document.getElementById('requestList');
-            
-            if(!d) { 
-                list.innerHTML = `<div style="text-align:center;color:#555;padding:20px;">No Requests Found</div>`; 
-                return; 
-            }
-
-            let html = '';
-            Object.keys(d).forEach(k => {
-                const r = d[k];
-                // SAFE CHECK
-                const name = r.requestName || r.name || "Unknown Request";
-                const msg = r.message || r.msg || "Please upload this content.";
-                const date = r.date || "";
-                const time = r.time || "";
-
-                html += `
-                <div class="list-item" style="border-left:3px solid gold; flex-direction:column; align-items:flex-start;">
-                    <div style="width:100%;display:flex;justify-content:space-between;">
-                        <b style="color:#ffd700;">${name}</b>
-                        <i class="fa-solid fa-trash" style="color:#ff4444; cursor:pointer;" onclick="db.ref('requests/${k}').remove()"></i>
-                    </div>
-                    <small style="color:#fff;">${msg}</small>
-                    <small style="color:#var(--accent); font-size:10px; margin-top:5px;">
-                        <i class="fa-regular fa-clock"></i> ${date} at ${time}
-                    </small>
-                </div>`;
-            });
-            list.innerHTML = html;
-        });
+    // 4. REQUEST LOADER (MATCHING YOUR SITE)
+    function loadRequests() { 
+        db.ref('requests').on('value', s => { 
+            document.getElementById('pendingRequests').innerText = s.numChildren(); 
+            const d = s.val(); let h = ''; 
+            if(d) Object.keys(d).reverse().forEach(k => { 
+                const i = d[k];
+                // KEYS: movieName, userName, time (FROM YOUR INDEX.HTML)
+                const name = i.movieName || "Unknown Request";
+                const user = i.userName || "Anonymous";
+                const time = i.time || "Just Now";
+                h += `<div class="list-item" style="border-left:3px solid var(--gold);flex-direction:column;align-items:flex-start;">
+                    <div style="width:100%;display:flex;justify-content:space-between;"><b style="color:var(--gold)">${name}</b><i class="fa-solid fa-trash" style="color:var(--red)" onclick="delItem('requests/${k}')"></i></div>
+                    <small style="color:#ccc;">User: ${user}</small>
+                    <small style="color:#aaa;font-size:9px;margin-top:5px;">${time}</small></div>`; 
+            }); 
+            document.getElementById('requestList').innerHTML = h || '<div style="text-align:center;color:#555;padding:20px;">No Requests</div>'; 
+        }); 
     }
 
-    // --- NEW: GENERATE DEMO DATA (FIXES EMPTY DB) ---
-    function generateDemoData() {
-        if(confirm("Generate sample reports & requests to test UI?")) {
-            playSound('click');
-            // Add Fake Report
-            db.ref('reports').push({
-                movieName: "Avatar: The Way of Water",
-                issue: "Download link 2 is not working.",
-                time: new Date().toLocaleString()
-            });
-            // Add Fake Request
-            db.ref('requests').push({
-                requestName: "Breaking Bad Season 5",
-                message: "Please upload 1080p version sir.",
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString()
-            });
-            alert("Demo Data Added! Check Inbox.");
-        }
-    }
-
-    // --- STANDARD FUNCTIONS (UNCHANGED) ---
-    function switchTab(t) { 
-        playSound('click');
-        document.querySelectorAll('.tab-content').forEach(e=>e.style.display='none'); 
-        document.getElementById(t).style.display='block'; 
-        document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        if(t === 'database') renderDB();
-    }
-    
-    // TMDB & UPLOAD LOGIC
+    // 5. TMDB & PUBLISH LOGIC
     async function fetchTMDB() {
-        playSound('click'); const q = document.getElementById('tmdbQuery').value; if(!q) return alert("Name?");
-        try { const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&query=${encodeURIComponent(q)}&language=en-US&include_adult=true`);
-        const data = await res.json();
-        let html = data.results.map(i => `<div class="list-item" onclick="syncData('${i.media_type}', ${i.id})"><img src="https://image.tmdb.org/t/p/w200${i.poster_path}" style="width:40px;"><b>${i.title||i.name}</b></div>`).join('');
-        openModal("SELECT CONTENT", html); } catch(e) { playSound('error'); }
+        const q = document.getElementById('tmdbQuery').value;
+        if(!q) return showModal("ERROR", "Enter Name");
+        try {
+            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(q)}&language=en-US&include_adult=true`);
+            const data = await res.json();
+            if(!data.results || data.results.length === 0) return showModal("OOPS", "No Content Found");
+            let html = data.results.filter(i => i.media_type !== 'person' && (i.poster_path || i.backdrop_path)).map(i => `<div class="list-item" onclick="syncData('${i.media_type}', ${i.id})"><img src="https://image.tmdb.org/t/p/w200${i.poster_path}" style="width:40px;height:60px;object-fit:cover;border-radius:5px;"><div><b style="color:#fff;">${i.title || i.name}</b><br><small style="color:var(--cyan);">${i.media_type.toUpperCase()}</small></div></div>`).join('');
+            showModal("SELECT CONTENT", html);
+        } catch(e) { showModal("ERROR", "Search Error"); }
     }
 
     async function syncData(type, id) {
         closeModal(); playSound('success');
-        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&language=en-US&append_to_response=credits,videos`);
-        const i = await res.json();
-        document.getElementById('mTitle').value = i.title || i.name; document.getElementById('mDesc').value = i.overview; document.getElementById('mRating').value = i.vote_average;
-        document.getElementById('mGenre').value = i.genres ? i.genres.map(g=>g.name).join(", ") : "";
-        document.getElementById('posterPreview').src = `https://image.tmdb.org/t/p/w500${i.poster_path}`;
-        const bg = i.backdrop_path ? `https://image.tmdb.org/t/p/w500${i.backdrop_path}` : "";
-        document.getElementById('mBackdrop').value = bg; document.getElementById('backdropPreview').src = bg;
-        let tr = ""; if(i.videos && i.videos.results.length>0){ const y = i.videos.results.filter(v=>v.site==="YouTube"); if(y.length>0){ let v=y.find(x=>x.type==="Trailer")||y.find(x=>x.type==="Teaser")||y[0]; tr=`https://www.youtube.com/watch?v=${v.key}`; } }
-        document.getElementById('mTrailer').value = tr;
-        if(i.credits && i.credits.cast) document.getElementById('mCast').value = i.credits.cast.slice(0,5).map(c=>c.name).join(", ");
-        document.getElementById('mType').value = (type==='tv')?'series':'movie'; toggleTypeUI();
+        try {
+            // INFO
+            const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${tmdbKey}&language=en-US`);
+            const i = await res.json();
+            document.getElementById('mTitle').value = i.title || i.name || "";
+            document.getElementById('mDesc').value = i.overview || "";
+            document.getElementById('mRating').value = i.vote_average ? i.vote_average.toFixed(1) : "";
+            document.getElementById('mGenre').value = (i.genres || []).map(g => g.name).join(", ");
+            if(i.poster_path) document.getElementById('posterPreview').src = `https://image.tmdb.org/t/p/w500${i.poster_path}`;
+            if(i.backdrop_path) document.getElementById('mBackdrop').value = `https://image.tmdb.org/t/p/w500${i.backdrop_path}`;
+            const isSeries = (type === 'tv');
+            document.getElementById('mType').value = isSeries ? 'series' : 'movie';
+            if(isSeries) document.getElementById('mSeason').value = 1;
+            toggleTypeUI();
+
+            // TRAILER
+            fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${tmdbKey}&language=en-US`).then(r=>r.json()).then(d=>{
+                if(d.results) {
+                    const yt = d.results.filter(v=>v.site==="YouTube");
+                    if(yt.length>0) {
+                        let vid = yt.find(v=>v.type==="Trailer") || yt[0];
+                        document.getElementById('mTrailer').value = `https://www.youtube.com/watch?v=${vid.key}`;
+                    }
+                }
+            });
+
+            // CAST
+            fetch(`https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${tmdbKey}&language=en-US`).then(r=>r.json()).then(d=>{
+                if(d.cast) document.getElementById('mCast').value = d.cast.slice(0,6).map(c=>c.name).join(", ");
+            });
+
+        } catch(e) { console.log("Sync Error"); }
     }
 
-    function toggleTypeUI() { const s = document.getElementById('mType').value==='series'; document.getElementById('seasonBox').style.display=s?'block':'none'; document.getElementById('epBox').style.display=s?'block':'none'; }
-    function processLink() { 
-        playSound('click'); const url = document.getElementById('lLink').value; if(!url) return;
-        if(linkState===0) { currentDL=url; linkState=1; document.getElementById('linkLbl').innerText="2. Watch Link"; document.getElementById('linkLbl').style.color="#00ff00"; document.getElementById('lLink').value=""; }
-        else { let ep = document.getElementById('mType').value==='series'?parseInt(document.getElementById('epNum').value):0; tempLinks.push({dl:currentDL, watch:url, qual:document.getElementById('lQual').value, ep:ep}); if(ep>0) document.getElementById('epNum').value=ep+1; linkState=0; document.getElementById('linkLbl').innerText="1. Download Link"; document.getElementById('linkLbl').style.color="var(--accent)"; document.getElementById('lLink').value=""; renderLinks(); }
+    function processLink() {
+        const url = document.getElementById('lLink').value; 
+        const size = document.getElementById('lSize').value || "";
+        if(!url) return;
+        if(linkState === 0) {
+            currentDL = url; linkState = 1;
+            document.getElementById('linkLbl').innerText = "2. Watch Link"; document.getElementById('linkLbl').style.color = "#00ff00"; document.getElementById('lLink').value = "";
+        } else {
+            let ep = document.getElementById('mType').value === 'series' ? parseInt(document.getElementById('epNum').value) : 0;
+            tempLinks.push({ dl: currentDL, watch: url, qual: document.getElementById('lQual').value, size: size, ep: ep });
+            if(ep > 0) document.getElementById('epNum').value = ep + 1;
+            linkState = 0;
+            document.getElementById('linkLbl').innerText = "1. DL Link"; document.getElementById('linkLbl').style.color = "var(--cyan)"; document.getElementById('lLink').value = ""; document.getElementById('lSize').value = "";
+            renderLinks();
+        }
     }
-    function renderLinks() { document.getElementById('linkContainer').innerHTML=tempLinks.map((l,i)=>`<div class="list-item"><span>${l.ep>0?'EP '+l.ep:'MOV'} • ${l.qual}</span><i class="fa-solid fa-trash" style="color:red" onclick="tempLinks.splice(${i},1);renderLinks()"></i></div>`).join(''); }
-    
+    function renderLinks() { document.getElementById('linkContainer').innerHTML = tempLinks.map((l, i) => `<div class="list-item" style="flex-direction:column; align-items:flex-start;"><div style="display:flex; justify-content:space-between; width:100%;"><span>${l.ep>0?'EP '+l.ep:'MOV'} • ${l.qual} <span style="color:orange;">${l.size}</span></span><i class="fa-solid fa-trash" style="color:red" onclick="tempLinks.splice(${i}, 1); renderLinks()"></i></div><small style="color:#666;">${l.dl}</small></div>`).join(''); }
+
     function publish() {
-        playSound('success'); const id=document.getElementById('editId').value||'mov_'+Date.now(); const title = document.getElementById('mTitle').value;
-        const data={ title:title, img:document.getElementById('posterPreview').src, backdrop:document.getElementById('mBackdrop').value, trailer:document.getElementById('mTrailer').value, cast:document.getElementById('mCast').value, isFeatured:document.getElementById('isFeatured').checked, type:document.getElementById('mType').value, season:document.getElementById('mSeason').value, lang:document.getElementById('mLang').value, quality:document.getElementById('cardBadge').value, genre:document.getElementById('mGenre').value, desc:document.getElementById('mDesc').value, notice:document.getElementById('mNotice').value, links:tempLinks, timestamp:Date.now() };
-        db.ref('movies/'+id).update(data).then(()=>{ alert("Published!"); logActivity(`Published: ${title}`); resetForm(); });
+        const id = document.getElementById('editId').value || 'mov_' + Date.now();
+        const type = document.getElementById('mType').value;
+        let contentData = tempLinks;
+
+        if(type === 'series') {
+            const episodes = {};
+            tempLinks.forEach(link => {
+                const ep = link.ep || 1;
+                if(!episodes[ep]) episodes[ep] = { epNum: ep, qualities: [] };
+                episodes[ep].qualities.push({ qual: link.qual, size: link.size, dl: link.dl, watch: link.watch });
+            });
+            contentData = Object.values(episodes);
+        } else {
+            contentData = tempLinks.map(l => ({ qual: l.qual, size: l.size, dl: l.dl, watch: l.watch }));
+        }
+
+        const data = {
+            title: document.getElementById('mTitle').value, img: document.getElementById('posterPreview').src, backdrop: document.getElementById('mBackdrop').value,
+            trailer: document.getElementById('mTrailer').value, cast: document.getElementById('mCast').value, rating: document.getElementById('mRating').value,
+            isFeatured: document.getElementById('isFeatured').checked, type: type, seasonNum: document.getElementById('mSeason').value,
+            lang: document.getElementById('mLang').value, genre: document.getElementById('mGenre').value, desc: document.getElementById('mDesc').value,
+            res: document.getElementById('cardBadge').value,
+            note: document.getElementById('mNotice').value,
+            content: contentData,
+            uploadTime: new Date().toISOString()
+        };
+        db.ref('movies/' + id).update(data).then(() => { showModal("SUCCESS", "Published Successfully!"); resetForm(); });
     }
 
     // UTILS
-    function logActivity(msg) { db.ref('adminLogs').push({ msg: msg, time: new Date().toLocaleString() }); loadLogs(); }
-    function loadLogs() { db.ref('adminLogs').limitToLast(10).once('value', s => { const d=s.val(); let h=''; if(d)Object.values(d).reverse().forEach(l=>{ h+=`<div class="log-item"><span>${l.time}</span> ${l.msg}</div>` }); document.getElementById('activityLogs').innerHTML=h; }); }
-    function loadSystemErrors() { db.ref('siteErrors').on('value', s=>{ const d=s.val(); let h=''; if(d)Object.keys(d).reverse().forEach(k=>{ h+=`<div style="border-bottom:1px solid #222;padding:5px 0;"><span style="color:#ff4444;">[ERR]</span> ${d[k].msg}</div>`; }); document.getElementById('systemTerminal').innerHTML=h||'<div style="color:#00ff00;">> System Status: Stable.</div>'; }); }
-    function clearErrors() { if(confirm("Clear?")) db.ref('siteErrors').remove(); }
-    function backupDatabase() { playSound('click'); db.ref('/').once('value',s=>{ const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(s.val())); a.download="backup.json"; document.body.appendChild(a); a.click(); a.remove(); }); }
-    function renderDB() { db.ref('movies').once('value',s=>{ const d=s.val(); let h=''; if(d)Object.keys(d).forEach(k=>{ const m=d[k]; h+=`<div class="db-card" style="background:#111;padding:10px;margin-bottom:10px;display:flex;gap:10px;border-radius:10px;"><img src="${m.img}" style="width:40px;height:60px;"><div style="flex:1"><b>${m.title}</b><br><small>${m.lang}</small></div><i class="fa-solid fa-pen" style="color:var(--accent)" onclick="loadEdit('${k}')"></i><i class="fa-solid fa-trash" style="color:red" onclick="db.ref('movies/${k}').remove();renderDB()"></i></div>`; }); document.getElementById('dbList').innerHTML=h; }); }
-    function loadEdit(id) { db.ref('movies/'+id).once('value',s=>{ const m=s.val(); document.getElementById('editId').value=id; document.getElementById('mTitle').value=m.title; document.getElementById('mDesc').value=m.desc; document.getElementById('mNotice').value=m.notice||""; document.getElementById('mGenre').value=m.genre||""; document.getElementById('posterPreview').src=m.img; document.getElementById('mBackdrop').value=m.backdrop||""; if(document.getElementById('backdropPreview'))document.getElementById('backdropPreview').src=m.backdrop||""; document.getElementById('mTrailer').value=m.trailer||""; document.getElementById('mCast').value=m.cast||""; document.getElementById('isFeatured').checked=m.isFeatured||false; document.getElementById('mType').value=m.type; toggleTypeUI(); tempLinks=m.links||[]; renderLinks(); switchTab('upload'); }); }
-    function resetForm() { document.getElementById('mTitle').value=""; document.getElementById('posterPreview').src=""; tempLinks=[]; renderLinks(); document.getElementById('editId').value=""; }
-    function openModal(t,c){document.getElementById('modalDisplayTitle').innerText=t;document.getElementById('mBody').innerHTML=c;document.getElementById('masterModal').style.display='flex';}
+    function triggerReset() { showConfirm("Clear form?", () => { resetForm(); showModal("INFO", "Form Cleared."); }); }
+    function resetForm() {
+        ['mTitle','mDesc','mGenre','mTrailer','mCast','mNotice','posterPreview','mBackdrop','lLink','lSize','editId','mRating'].forEach(id=>{const e=document.getElementById(id);if(e){if(e.tagName==='IMG')e.src="";else e.value="";}});
+        document.getElementById('isFeatured').checked=false; document.getElementById('mType').value='movie'; toggleTypeUI(); tempLinks=[]; renderLinks();
+    }
+    function toggleTypeUI(){ const s=document.getElementById('mType').value==='series'; document.getElementById('seasonBox').style.display=s?'block':'none'; document.getElementById('epBox').style.display=s?'block':'none'; }
+    function renderDB() {
+        const q = document.getElementById('dbSearch').value.toLowerCase();
+        db.ref('movies').once('value', s => {
+            const d = s.val(); let h = '';
+            if(d) Object.keys(d).forEach(k => {
+                const m = d[k];
+                if((m.title||"").toLowerCase().includes(q)) {
+                    h += `<div class="list-item"><img src="${m.img}" style="width:40px;"> <div style="flex:1"><b>${m.title}</b><br><small>${m.lang} • ${m.res||'HD'}</small></div> <i class="fa-solid fa-pen" style="color:var(--cyan)" onclick="loadEdit('${k}')"></i> <i class="fa-solid fa-trash" style="color:red" onclick="delItem('movies/${k}');renderDB()"></i></div>`;
+                }
+            });
+            document.getElementById('dbList').innerHTML = h || '<div style="text-align:center;padding:20px;color:#555">No Movies Found</div>';
+        });
+    }
+    
+    function generateDemoData(){ showConfirm("Generate Data?",()=>{ db.ref('reports').push({movie:"Test Movie", link:"Broken Link", time:"Just Now"}); db.ref('requests').push({movieName:"Test Request", userName:"Tester", time:"Just Now"}); showModal("DONE","Data added."); }); }
+    function delItem(p){ showConfirm("Delete?",()=>{db.ref(p).remove();}); }
+    function clearErrors(){ showConfirm("Clear Logs?",()=>{db.ref('siteErrors').remove();}); }
+    function switchTab(t){ playSound('click'); document.querySelectorAll('.tab-content').forEach(e=>e.style.display='none'); document.getElementById(t).style.display='block'; document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active')); event.currentTarget.classList.add('active'); if(t==='database')renderDB(); }
+    
+    function loadEdit(id){ db.ref('movies/'+id).once('value',s=>{const m=s.val();document.getElementById('editId').value=id;document.getElementById('mTitle').value=m.title;document.getElementById('mDesc').value=m.desc;document.getElementById('mNotice').value=m.note||"";document.getElementById('mGenre').value=m.genre||"";document.getElementById('posterPreview').src=m.img;document.getElementById('mBackdrop').value=m.backdrop||"";document.getElementById('mTrailer').value=m.trailer||"";document.getElementById('mCast').value=m.cast||"";document.getElementById('cardBadge').value=m.res||"720p";document.getElementById('mRating').value=m.rating||"";document.getElementById('isFeatured').checked=m.isFeatured||false;document.getElementById('mType').value=m.type||"movie";toggleTypeUI();
+    tempLinks=[]; 
+    if(m.content) {
+        if(m.type==='series'){ m.content.forEach(ep=>{ ep.qualities.forEach(q=>{ tempLinks.push({ep:ep.epNum, qual:q.qual, size:q.size, dl:q.dl, watch:q.watch}) }) }) }
+        else { m.content.forEach(q=>{ tempLinks.push({qual:q.qual, size:q.size, dl:q.dl, watch:q.watch}) }) }
+    }
+    renderLinks();switchTab('upload');}); }
+    function backupDatabase(){ db.ref('/').once('value',s=>{const a=document.createElement('a');a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(s.val()));a.download="backup.json";document.body.appendChild(a);a.click();a.remove();}); }
+    function loadSystemErrors() { db.ref('siteErrors').on('value', s=>{ const d=s.val(); let h=''; let err=false; if(d){ err=true; Object.keys(d).reverse().forEach(k=>{ h+=`<div style="border-bottom:1px solid #333;padding:5px 0;"><span style="color:#ff4444;">[ERR]</span> ${d[k].msg}</div>`; }); } document.getElementById('systemTerminal').innerHTML=h||'<div style="color:#00ff00;">> System Status: Stable.</div>'; const st=document.getElementById('siteHealthText'); if(err){st.innerText="CRITICAL ERRORS";st.style.color="#ff0044";}else{st.innerText="ONLINE & STABLE";st.style.color="#00ff00";} }); }
+    function showModal(t,m){document.getElementById('modalTitle').innerText=t;document.getElementById('modalBody').innerHTML=m;document.getElementById('masterModal').style.display='flex';playSound('click');}
     function closeModal(){document.getElementById('masterModal').style.display='none';}
-    function saveSettings(){alert("Settings Saved!");}
+    function showConfirm(m,cb){document.getElementById('confirmBody').innerText=m;document.getElementById('confirmModal').style.display='flex';playSound('error');const b=document.getElementById('confirmBtnAction');const n=b.cloneNode(true);b.parentNode.replaceChild(n,b);n.onclick=()=>{cb();closeConfirm();};}
+    function closeConfirm(){document.getElementById('confirmModal').style.display='none';}
+    function playSound(t){if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);if(t==='click'){o.frequency.setValueAtTime(800,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.1);o.start();o.stop(audioCtx.currentTime+0.1);}else if(t==='success'){o.type='triangle';o.frequency.setValueAtTime(400,audioCtx.currentTime);o.frequency.linearRampToValueAtTime(800,audioCtx.currentTime+0.1);o.start();o.stop(audioCtx.currentTime+0.3);}else{o.type='sawtooth';o.frequency.setValueAtTime(150,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.3);o.start();o.stop(audioCtx.currentTime+0.3);}}
 
-    window.onload = () => {
-        db.ref('movies').on('value', s => document.getElementById('totalMovies').innerText = s.numChildren());
-        db.ref('siteViews').on('value', s => document.getElementById('liveViews').innerText = s.val() || 0);
-    };
+    window.onload = () => { db.ref('movies').on('value', s => document.getElementById('totalMovies').innerText = s.numChildren()); }
 </script>
-
-
+</body>
+</html>
 
 
 
