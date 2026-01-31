@@ -3,59 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ GOD MODE MASTER HUB</title>
+    <title>⚡ GOD MODE MASTER HUB (FINAL)</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Outfit:wght@400;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <style>
-        :root { --bg: #000; --panel: #0a0a0a; --cyan: #00f3ff; --red: #ff0044; --gold: #ffd700; --neon: linear-gradient(45deg, #ff0044, #00f3ff, #00ff00, #ff0044); }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; padding-top: 85px; overflow-x: hidden; }
-        * { box-sizing: border-box; transition: 0.2s; }
-
-        /* MODAL */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-card { background: #050505; width: 90%; max-width: 400px; border-radius: 25px; border: 2px solid var(--cyan); box-shadow: 0 0 50px rgba(0, 243, 255, 0.15); overflow: hidden; text-align: center; }
-        .modal-header { padding: 20px; font-family: 'Rajdhani'; font-size: 22px; color: var(--cyan); font-weight: 800; border-bottom: 1px solid #222; }
-        .modal-body { padding: 25px; max-height: 50vh; overflow-y: auto; color: #ccc; font-size: 14px; }
-        .btn-cyan { background: var(--cyan); color: #000; padding: 12px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; width: 100%; text-transform: uppercase; }
-        .btn-cancel { background: transparent; border: 2px solid #333; color: #888; }
-
-        /* RGB BORDER & PANEL */
-        .rgb-border { position: relative; padding: 2px; border-radius: 30px; background: var(--neon); background-size: 200% 200%; animation: rgb 4s linear infinite; margin-bottom: 20px; }
-        @keyframes rgb { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-        .inner-panel { background: var(--panel); border-radius: 28px; padding: 25px; height: 100%; }
-
-        /* INPUTS */
-        input, select, textarea { width: 100%; background: #000; border: 1.5px solid #222; color: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-weight: 600; }
-        input:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; background: #111; padding: 12px; border-radius: 12px; margin-bottom: 15px; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 30px; }
-        input:checked + .slider { background-color: var(--cyan); }
-        input:checked + .slider:before { content: ""; position: absolute; height: 18px; width: 18px; left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%; transform: translateX(24px); }
-
-        /* NAV & LISTS */
-        .top-nav { position: fixed; top: 0; left: 0; width: 100%; height: 80px; background: rgba(0,0,0,0.9); border-bottom: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 5000; backdrop-filter: blur(15px); }
-        .nav-tab { font-size: 24px; color: #555; cursor: pointer; padding: 10px 20px; border-radius: 15px; position: relative; }
-        .nav-tab.active { color: var(--cyan); background: rgba(0, 243, 255, 0.1); }
-        .list-item { padding: 12px; background: #111; margin-bottom: 8px; border-radius: 12px; border: 1px solid #222; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        
-        #loginScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; align-items: center; justify-content: center; }
-        #mainApp { display: none; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div id="loginScreen">
-        <div class="rgb-border"><div class="inner-panel" style="text-align:center; width:320px;">
-            <h2 style="color:var(--cyan); font-family:'Rajdhani';">SECURE ACCESS</h2>
-            <input type="text" id="usrInput" placeholder="USERNAME" style="text-align:center;">
-            <input type="password" id="passInput" placeholder="PASSWORD" style="text-align:center;">
-            <button onclick="checkLogin()" class="btn-cyan">UNLOCK</button>
-            <p id="loginMsg" style="color:red; font-size:12px; margin-top:10px;"></p>
-        </div></div>
+        <div class="rgb-border">
+            <div class="inner-panel" style="text-align:center; width:320px;">
+                <h2 style="color:var(--cyan); font-family:'Rajdhani';">SECURE ACCESS</h2>
+                <input type="email" id="usrInput" placeholder="ADMIN EMAIL" style="text-align:center;">
+                <input type="password" id="passInput" placeholder="PASSWORD" style="text-align:center;">
+                <button onclick="checkLogin()" class="btn-cyan">UNLOCK</button>
+                <p id="loginMsg" style="color:red; font-size:12px; margin-top:10px;"></p>
+            </div>
+        </div>
     </div>
 
     <div id="mainApp">
@@ -66,62 +36,138 @@
                 <div class="modal-footer" style="padding:20px;"><button onclick="closeModal()" class="btn-cyan">CLOSE</button></div>
             </div>
         </div>
-        <div id="confirmModal" class="modal-overlay">
-            <div class="modal-card" style="border-color:var(--red);">
-                <div class="modal-header" style="color:var(--red);">CONFIRM ACTION</div>
-                <div id="confirmBody" class="modal-body">Are you sure?</div>
-                <div class="modal-footer" style="padding:20px; display:flex; gap:10px;">
-                    <button onclick="closeConfirm()" class="btn-cyan btn-cancel" style="width:auto;">CANCEL</button>
-                    <button id="confirmBtnAction" class="btn-cyan" style="background:var(--red); color:#fff; width:auto;">CONFIRM</button>
-                </div>
-            </div>
-        </div>
 
         <div class="top-nav">
             <div class="nav-tab active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i></div>
-            <div class="nav-tab" onclick="switchTab('inbox')">
-                <i class="fa-solid fa-bell"></i>
-                <span id="notifBadge" style="position:absolute; top:12px; right:15px; width:8px; height:8px; background:red; border-radius:50%; display:none;"></span>
-            </div>
+            <div class="nav-tab" onclick="switchTab('inbox')"><i class="fa-solid fa-bell"></i><span id="notifBadge" style="position:absolute; top:12px; right:15px; width:8px; height:8px; background:red; border-radius:50%; display:none;"></span></div>
             <div class="nav-tab" onclick="switchTab('upload')"><i class="fa-solid fa-cloud-arrow-up"></i></div>
             <div class="nav-tab" onclick="switchTab('database')"><i class="fa-solid fa-server"></i></div>
-            <div class="nav-tab" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i></div>
+            <div class="nav-tab" onclick="switchTab('automation')"><i class="fa-solid fa-robot"></i></div>
+            <div class="nav-tab" onclick="switchTab('excelmaker')"><i class="fa-solid fa-table"></i></div>
         </div>
 
         <div style="padding: 20px;">
+            
             <div id="dashboard" class="tab-content">
-                <h1 style="font-family:'Rajdhani';">DASHBOARD</h1>
-                <div class="rgb-border" style="margin-bottom:20px; border-color:#00ff00 !important;" id="healthBorder">
+                <h1 style="font-family:'Rajdhani';">DASHBOARD <span style="font-size:12px; color:var(--cyan)">V5.0 PRO</span></h1>
+                <div class="rgb-border" style="margin-bottom:20px; border-color:#00ff00 !important;">
                     <div class="inner-panel" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                        <div><label style="margin:0; font-size:12px;">SITE STATUS</label><h2 id="siteHealthText" style="margin:0; color:#00ff00;">ONLINE & STABLE</h2></div>
-                        <i id="healthIcon" class="fa-solid fa-heart-pulse" style="font-size:30px; color:#00ff00;"></i>
+                        <div><label style="margin:0; font-size:12px;">SYSTEM STATUS</label><h2 style="margin:0; color:#00ff00;">ONLINE & SECURE</h2></div>
+                        <i class="fa-solid fa-shield-halved" style="font-size:30px; color:#00ff00;"></i>
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom: 20px;">
                     <div class="rgb-border"><div class="inner-panel"><label>Total Content</label><h2 id="totalMovies" style="font-size:40px; margin:0;">0</h2></div></div>
                     <div class="rgb-border"><div class="inner-panel"><label>Reports</label><h2 id="pendingReports" style="font-size:40px; margin:0; color:var(--red);">0</h2></div></div>
                 </div>
-            </div>
-            <div id="upload" class="tab-content" style="display:none;">
-                <div class="rgb-border" style="margin-bottom:20px;"><div class="inner-panel">
-                    <label>TMDB SEARCH</label>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="tmdbQuery" placeholder="Movie Name..." style="margin:0;">
-                        <button onclick="fetchTMDB()" class="btn-cyan" style="width:auto; padding:0 25px;">SEARCH</button>
-                    </div>
-                </div></div>
+            </div> 
 
+                        <div id="excelmaker" class="tab-content" style="display:none;">
+                <div class="rgb-border" style="border-color:var(--cyan) !important;">
+                    <div class="inner-panel">
+                        <label style="color:var(--cyan); font-weight:bold;"><i class="fa-solid fa-wand-magic-sparkles"></i> SMART TITLE GENERATOR</label>
+                        
+                        <div style="background:#111; padding:15px; border-radius:15px; margin-top:15px; border:1px solid #333;">
+                            
+                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+                                <img id="genThumb" src="https://via.placeholder.com/45x65" style="width:50px; height:75px; object-fit:cover; border-radius:5px; border:1px solid #333; display:none;"> 
+                                <div style="flex:2;">
+                                    <label>Movie Name (Clean)</label>
+                                    <input type="text" id="genTitle" placeholder="e.g. Pathan" onkeyup="generateSmartTitle()" onchange="autoFetchYearForExcel()">
+                                </div>
+                                <div style="flex:1;">
+                                    <label>Year</label>
+                                    <input type="text" id="genYear" placeholder="Auto" onkeyup="generateSmartTitle()">
+                                </div>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                                <div><label>Quality</label><select id="genQual" onchange="generateSmartTitle()"><option>720p HD</option><option>1080p FHD</option><option>4K UHD</option><option>480p SD</option></select></div>
+                                <div><label>Audio</label><select id="genAudio" onchange="generateSmartTitle()"><option>Hindi</option><option>Dual Audio</option><option>Multi Audio</option><option>English</option><option>Bengali</option></select></div>
+                            </div>
+                            
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                                <div><label>Source</label><select id="genSource" onchange="generateSmartTitle()"><option>Web-DL</option><option>BluRay</option><option>HDRip</option><option>CAMRip</option></select></div>
+                                <div>
+                                    <label style="color:var(--gold);">File Size</label>
+                                    <input type="text" id="genSize" placeholder="e.g. 1.4 GB" style="border-color:var(--gold);">
+                                </div>
+                            </div>
+
+                            <div style="background:#000; border:1px solid var(--gold); padding:10px; border-radius:5px; margin-bottom:15px;">
+                                <label style="color:var(--gold); font-size:10px;">FINAL DISPLAY TITLE:</label>
+                                <input type="text" id="finalSmartTitle" readonly style="background:transparent; border:none; color:#fff; font-weight:bold; font-size:14px; margin:0; padding:0;">
+                            </div>
+
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                <div><label>Link (Server)</label><input type="text" id="genLink" placeholder="Stream Link..."></div>
+                                <div><label>Download Link</label><input type="text" id="genDL" placeholder="Download Link..."></div>
+                            </div>
+
+                            <button onclick="addToExcelList()" class="btn-cyan" style="margin-top:15px;"><i class="fa-solid fa-plus"></i> ADD TO LIST</button>
+                        </div>
+
+                        <div style="margin-top:20px;">
+                            <h4 style="color:var(--gold);">ADDED LIST (<span id="excelCount">0</span>)</h4>
+                            <div id="excelPreview" style="max-height:300px; overflow-y:auto; border:1px solid #333; border-radius:10px; padding:10px; background:#000;">
+                                <div style="text-align:center; color:#555; padding:20px;">List is Empty</div>
+                            </div>
+                        </div>
+
+                        <button onclick="downloadGeneratedExcel()" class="btn-cyan" style="margin-top:20px; background:var(--gold); color:black;">
+                            <i class="fa-solid fa-download"></i> DOWNLOAD EXCEL FILE
+                        </button>
+                    </div>
+                </div>
+            </div>
+         
+
+            <div id="upload" class="tab-content" style="display:none;">
+                <div class="rgb-border" style="margin-bottom:15px;">
+                    <div class="inner-panel">
+                        <label style="color:var(--cyan); font-weight:bold; margin-bottom:10px; display:block;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> AUTO FILL AI (TMDB)
+                        </label>
+                        <div style="display:flex; gap:10px; align-items: center;">
+                            <input type="text" id="tmdbQuery" placeholder="Movie Name or ID..." style="margin:0; flex:2;">
+                            <button onclick="fetchHybrid()" class="btn-cyan" style="width:auto; flex:1; padding:12px; font-size:14px;">
+                                FETCH
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rgb-border" style="border-color:var(--gold) !important; margin-bottom:20px;">
+                    <div class="inner-panel" style="text-align:center;">
+                        <label style="color:var(--gold); font-weight:bold; display:block; margin-bottom:10px;">
+                            <i class="fa-solid fa-file-excel"></i> BULK UPLOAD (EXCEL)
+                        </label>
+                        <div style="border: 1px dashed var(--gold); padding: 10px; border-radius: 10px;">
+                            <input type="file" onchange="handleBulkUpload(this)" accept=".xlsx, .xls" style="border:none; padding:0; margin:0; width:100%; color:#aaa;">
+                        </div>
+                        <small style="color:#666; display:block; margin-top:5px; font-size:10px;">
+                            Format: Title, Year, Type, Poster, Link1
+                        </small>
+                    </div>
+                </div>
+                
                 <div class="inner-panel" style="border:1px solid #222;">
-                    <input type="hidden" id="editId">
-                    <input type="hidden" id="tmdbId"> 
+                    <input type="hidden" id="editId"><input type="hidden" id="tmdbId"> 
                     
                     <div style="display:grid; grid-template-columns: 100px 1fr; gap:20px;">
                         <div>
                             <img id="posterPreview" src="" style="width:100%; border-radius:10px; min-height:150px; background:#111; object-fit:cover;">
-                            <label style="margin-top:10px; font-size:10px; color:var(--cyan);">QUALITY</label>
+                            <label style="margin-top:10px; font-size:10px; color:var(--cyan);">QUALITY TAG</label>
                             <select id="lQual" style="padding:5px; margin-bottom:5px;">
-                                <option value="4K">4K UHD</option><option value="1080p">1080p FHD</option><option value="720p" selected>720p HD</option>
-                                <option value="HD">HD Rip</option><option value="CAM">CAMRip</option>
+                                <option value="4K UHD">4K UHD</option>
+                                <option value="1080p FHD">1080p FHD</option>
+                                <option value="720p HD" selected>720p HD</option>
+                                <option value="480p SD">480p SD</option>
+                                <option value="WEB-DL">WEB-DL</option>
+                                <option value="BluRay">BluRay</option>
+                                <option value="HDRip">HDRip</option>
+                                <option value="IMAX">IMAX</option>
+                                <option value="Dual Audio">Dual Audio</option>
                             </select>
                             <div class="toggle-container" style="margin-top:5px;">
                                 <label style="margin:0; font-size:9px;">FEATURED</label>
@@ -129,354 +175,132 @@
                             </div>
                         </div>
                         <div>
-                            <label>Title (Auto-Update)</label><input type="text" id="mTitle">
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                                <div><label>Trailer</label><input type="text" id="mTrailer"></div>
-                                <div><label>Cast</label><input type="text" id="mCast"></div>
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex: 2;"><label>Title</label><input type="text" id="mTitle"></div>
+                                <div style="flex: 1;"><label>Year</label><input type="text" id="mYear" placeholder="2024"></div>
                             </div>
-                            <label style="color:#00ff00;">Genres</label><input type="text" id="mGenre" style="border-color:#00ff00;">
-                            
+                            <div><label><i class="fa-brands fa-youtube" style="color:red;"></i> Trailer Link (Auto)</label><input type="text" id="mTrailer"></div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
+                                <div><label class="badge-omdb">IMDb</label><input type="text" id="mRating" placeholder="8.5"></div>
+                                <div><label class="badge-rt">Rotten</label><input type="text" id="rtRating" placeholder="90%"></div>
+                                <div><label style="background:#000; color:#fff; font-size:10px;">Meta</label><input type="text" id="metaRating" placeholder="80"></div>
+                            </div>
+                            <label style="color:#00ff00;">Genres (Auto)</label><input type="text" id="mGenre" style="border-color:#00ff00;">
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                                 <div><label>Type</label><select id="mType" onchange="toggleTypeUI()"><option value="movie">Movie</option><option value="series">Web Series</option></select></div>
                                 <div id="seasonBox" style="display:none;">
                                     <label>Season</label>
-                                    <div style="display:flex; gap:5px;">
-                                        <input type="number" id="mSeason" value="1" style="margin:0;">
+                                    <div class="ctrl-group">
+                                        <input type="number" id="mSeason" value="1">
+                                        <button class="ctrl-btn" onclick="inc('mSeason')">+</button>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                                <div><label>Lang</label><select id="mLang"><option>Dual Audio</option><option>Hindi</option><option>English</option><option>Bangla</option></select></div>
-                                <div><label>Rating</label><input type="number" id="mRating" step="0.1" placeholder="8.5"></div>
+                            <div style="margin-top:10px;">
+                                <label>Domain Lock</label>
+                                <input type="text" id="domainLock" placeholder="yoursite.com" style="border-color:var(--red);">
                             </div>
                         </div>
                     </div>
 
                     <input type="hidden" id="mBackdrop">
-                    <label style="color:var(--gold); margin-top:15px;">DETAILS NOTICE</label>
-                    <input type="text" id="mNotice" placeholder="Yellow Alert..." style="border-color:var(--gold);">
-                    <label>Description</label><textarea id="mDesc" style="height:70px;"></textarea>
-
+                    <label style="margin-top:15px;">Description</label><textarea id="mDesc" style="height:70px;"></textarea>
+                    
                     <div style="background:#000; border:2px dashed var(--cyan); padding:15px; border-radius:15px; margin-top:15px;">
-                        <div style="display:grid; grid-template-columns: 50px 70px 80px 1fr 40px; gap:8px; align-items:end;">
-                            <div id="epBox" style="display:none;">
-                                <label>EP</label>
-                                <input type="number" id="epNum" value="1" style="margin:0; padding:10px;">
+                        <h4 style="color:var(--cyan); margin-top:0;">ADD VIDEO SOURCE</h4>
+                        <div style="display:flex; gap:10px; margin-bottom:10px;">
+                            <div id="epBox" style="display:none; flex:1;">
+                                <label>Episode</label>
+                                <div class="ctrl-group">
+                                    <input type="number" id="epNum" value="1">
+                                    <button class="ctrl-btn" onclick="inc('epNum')">+</button>
+                                </div>
                             </div>
-                            
-                            <div><label>Res</label><select id="linkQual" style="margin:0; padding:10px;"><option>720p</option><option>1080p</option><option>4K</option></select></div>
-                            <div><label style="color:orange;">Size</label><input type="text" id="lSize" placeholder="1.2GB" style="margin:0; padding:10px;"></div>
-                            <div><label id="linkLbl" style="color:var(--cyan)">Link</label><input type="text" id="lLink" style="margin:0; padding:10px;" onchange="autoFillLink()"></div>
-                            <button onclick="processLink()" class="btn-cyan" style="padding:10px; border-radius:10px;"><i class="fa-solid fa-plus"></i></button>
+                            <div style="flex:2;">
+                                <label>Link Quality</label>
+                                <select id="linkQual" style="margin:0;">
+                                    <option>4K</option><option>1080p</option><option>720p</option><option>480p</option>
+                                    <option>HDRip</option><option>BluRay</option><option>Dual Audio</option>
+                                </select>
+                            </div>
                         </div>
-                        <button id="btnFetchEP" onclick="fetchEpisodeInfo()" class="btn-cyan" style="width:auto; font-size:10px; padding:5px 10px; margin-top:5px; background:var(--gold); color:black; display:none;">
-                            <i class="fa-solid fa-bolt"></i> FETCH EPISODE DATA
-                        </button>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div><label>Server 1 (Auto)</label><input type="text" id="server1" placeholder="Auto VidSrc Link..." style="color:#0f0;"></div>
+                            <div><label>Server 2 (Auto)</label><input type="text" id="server2" placeholder="Auto 2Embed Link..." style="color:#0f0;"></div>
+                        </div>
+                        
+                        <label style="color:var(--gold); margin-top:10px; display:block;">Download Source</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="dlLink" placeholder="Paste CineFreak/Other Link here..." style="flex:1;">
+                            <button onclick="openCineFreak()" class="btn-cyan" style="width:auto; padding:0 15px; background:var(--gold); color:black; font-size:12px;">
+                                <i class="fa-solid fa-magnifying-glass"></i> SEARCH CF
+                            </button>
+                        </div>
+
+                        <div><label>Watch Link (Manual)</label><input type="text" id="watchLink" placeholder="Manual Watch Link..."></div>
+
+                        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                            <button id="btnFetchEP" onclick="fetchEpisodeInfo()" class="btn-cyan" style="width:auto; font-size:10px; padding:5px 15px; background:var(--gold); color:black; display:none;"><i class="fa-solid fa-bolt"></i> FETCH EP INFO</button>
+                            <button onclick="addMultiServerLink()" class="btn-cyan" style="width:auto; padding:10px 30px;"><i class="fa-solid fa-plus"></i> ADD SOURCE</button>
+                        </div>
                     </div>
                     <div id="linkContainer" style="margin-top:15px;"></div>
-
                     <div style="display:flex; gap:15px; margin-top:25px;">
                         <button onclick="triggerReset()" class="btn-cyan" style="background:transparent; border:2px solid #555; color:#aaa;">RESET</button>
-                        <button onclick="publish()" class="btn-cyan">PUBLISH (AUTO TITLE)</button>
+                        <button onclick="publish()" class="btn-cyan">PUBLISH CONTENT</button>
                     </div>
                 </div>
             </div>
+
             <div id="database" class="tab-content" style="display:none;">
                 <div class="rgb-border"><div class="inner-panel">
                     <input type="text" id="dbSearch" placeholder="Search Database..." onkeyup="renderDB()">
                     <div id="dbList" style="margin-top:20px;"></div>
                 </div></div>
             </div>
+            
+                       <div id="automation" class="tab-content" style="display:none;">
+                <div class="rgb-border" style="border-color:var(--cyan) !important;">
+                    <div class="inner-panel">
+                        <label style="color:var(--cyan); font-weight:bold; font-size:18px;">
+                            <i class="fa-solid fa-robot"></i> SYSTEM AUTO SCANNER
+                        </label>
+                        
+                        <div style="background:#111; padding:20px; border-radius:15px; margin-top:15px; border:1px solid #333; text-align:center;">
+                            <i class="fa-solid fa-heart-pulse" style="font-size:40px; color:var(--red); margin-bottom:10px;"></i>
+                            <h3 style="margin:0; color:#fff;">BROKEN LINK FINDER (PRO)</h3>
+                            <p style="color:#aaa; font-size:12px; margin-bottom:20px;">
+                                Deep Scan your database for dead links, missing content, and server errors.
+                            </p>
+                            
+                            <button onclick="startAutoScan()" class="btn-cyan" style="background:var(--red); color:#fff; border:none; box-shadow: 0 0 15px rgba(255,0,68,0.4);">
+                                <i class="fa-solid fa-radar"></i> START DEEP SCAN
+                            </button>
+                        </div>
 
-            <div id="inbox" class="tab-content" style="display:none;">
-                <h1>USER <span style="color:var(--cyan);">FEEDBACK</span></h1>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div class="rgb-border" style="border-color:var(--red) !important;">
-                        <div class="inner-panel"><label style="color:var(--red);">REPORTS</label><div id="reportList" style="height:400px; overflow-y:auto; margin-top:10px;"></div></div>
-                    </div>
-                    <div class="rgb-border" style="border-color:var(--gold) !important;">
-                        <div class="inner-panel"><label style="color:var(--gold);">REQUESTS</label><div id="requestList" style="height:400px; overflow-y:auto; margin-top:10px;"></div></div>
+                        <div style="margin-top:20px; border-top:1px solid #333; padding-top:20px;">
+                            <label><i class="fa-brands fa-telegram"></i> Telegram Bot Config</label>
+                            <input type="text" id="tgToken" placeholder="Bot Token">
+                            <input type="text" id="tgChatId" placeholder="Channel ID (-100xxxx)">
+                            <button onclick="saveSettings()" class="btn-cyan" style="width:auto; font-size:12px;">SAVE CONFIG</button>
+                        </div>
+
                     </div>
                 </div>
             </div>
-
-            <div id="settings" class="tab-content" style="display:none;">
-                <h1>CONTROL</h1>
-                <div class="rgb-border" style="margin-bottom:20px; border-color:#ff00ff !important;"><div class="inner-panel">
-                    <button onclick="generateDemoData()" class="btn-cyan" style="background:#ff00ff; color:#fff;">GENERATE DEMO DATA (FIX)</button>
-                </div></div>
-                <div class="rgb-border"><div class="inner-panel">
-                    <button onclick="backupDatabase()" class="btn-cyan" style="background:#00ff00; color:#000;">BACKUP DATABASE</button>
-                </div></div>
+            
+            <div id="inbox" class="tab-content" style="display:none;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="rgb-border" style="border-color:var(--red) !important;"><div class="inner-panel"><label style="color:var(--red);">REPORTS</label><div id="reportList" style="height:400px; overflow-y:auto; margin-top:10px;"></div></div></div>
+                    <div class="rgb-border" style="border-color:var(--gold) !important;"><div class="inner-panel"><label style="color:var(--gold);">REQUESTS</label><div id="requestList" style="height:400px; overflow-y:auto; margin-top:10px;"></div></div></div>
+                </div>
             </div>
         </div>
     </div>
-    <script>
-    const config = { apiKey: "AIzaSyDq_l6aCUPm4SQoDbpROnUc7PMn_nF6kPI", databaseURL: "https://pritam-ott-default-rtdb.firebaseio.com" };
-    firebase.initializeApp(config);
-    const db = firebase.database();
-    
-    const tmdbKey = "15d2ea6d0dc1d476efbca3eba2b9bbfb"; 
-    let movies = [], tempLinks = [], linkState = 0, currentDL = "";
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    // 1. LOGIN
-    function checkLogin() {
-        const u = document.getElementById('usrInput').value.trim();
-        const p = document.getElementById('passInput').value.trim();
-        if(u==="pritam" && p==="2026") {
-            document.getElementById('loginScreen').style.display='none';
-            document.getElementById('mainApp').style.display='block';
-            playSound('success');
-            setTimeout(() => { try{loadReports();loadRequests();renderDB();}catch(e){} }, 500);
-        } else {
-            document.getElementById('loginMsg').innerText = "ACCESS DENIED";
-            playSound('error');
-        }
-    }
+    <script src="config.js"></script>
+    <script src="api.js"></script>
+    <script src="script.js"></script>
 
-    // 2. DATA LOADERS
-    function loadReports() { 
-        db.ref('reports').on('value', s => { 
-            const d = s.val(); 
-            document.getElementById('pendingReports').innerText = s.numChildren();
-            document.getElementById('notifBadge').style.display = s.numChildren() > 0 ? 'block' : 'none';
-            let h = ''; 
-            if(d) Object.keys(d).reverse().forEach(k => { 
-                const i = d[k];
-                h += `<div class="list-item" style="border-left:3px solid var(--red);flex-direction:column;align-items:flex-start;">
-                    <div style="width:100%;display:flex;justify-content:space-between;"><b style="color:var(--red)">${i.movie||'Unknown'}</b><i class="fa-solid fa-check" style="color:green" cursor:pointer;" onclick="delItem('reports/${k}')"></i></div>
-                    <small style="color:#ccc;">${i.link||'Broken'}</small><small style="color:#555;">${i.time||''}</small></div>`; 
-            }); 
-            document.getElementById('reportList').innerHTML = h; 
-        }); 
-    }
-    
-    function loadRequests() { 
-        db.ref('requests').on('value', s => { 
-            const d = s.val(); let h = ''; 
-            if(d) Object.keys(d).reverse().forEach(k => { 
-                const i = d[k];
-                h += `<div class="list-item" style="border-left:3px solid var(--gold);flex-direction:column;align-items:flex-start;">
-                    <div style="width:100%;display:flex;justify-content:space-between;"><b style="color:var(--gold)">${i.movieName||'Request'}</b><i class="fa-solid fa-trash" style="color:var(--red); cursor:pointer;" onclick="delItem('requests/${k}')"></i></div>
-                    <small style="color:#ccc;">User: ${i.userName||'Anon'}</small><small style="color:#aaa;">${i.time||''}</small></div>`; 
-            }); 
-            document.getElementById('requestList').innerHTML = h; 
-        }); 
-    }
-
-    // 3. TMDB FETCH (Fixed Modal HTML Issue)
-    async function fetchTMDB() {
-        const q = document.getElementById('tmdbQuery').value;
-        if(!q) return showModal("ERROR", "Enter Name");
-        try {
-            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${tmdbKey}&query=${encodeURIComponent(q)}`);
-            const data = await res.json();
-            if(!data.results.length) return showModal("OOPS", "No Content Found");
-            
-            // FIXED: Using backticks correctly
-            let html = data.results.filter(x=>x.media_type!=='person').map(x => `
-                <div class="list-item" onclick="syncData('${x.media_type}', ${x.id})" style="cursor:pointer;">
-                    <img src="https://image.tmdb.org/t/p/w200${x.poster_path}" style="width:40px;height:60px;object-fit:cover; margin-right:10px;">
-                    <div><b>${x.title||x.name}</b><br><small style="color:var(--cyan);">${x.media_type.toUpperCase()} • ${x.release_date||x.first_air_date||'N/A'}</small></div>
-                </div>`).join('');
-                
-            showModal("SELECT CONTENT", html);
-        } catch(e) { showModal("ERROR", "VPN Required for TMDB"); }
-    }
-
-    async function syncData(type, id) {
-        closeModal(); playSound('success');
-        document.getElementById('tmdbId').value = id;
-        
-        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${tmdbKey}&append_to_response=videos,credits`);
-        const i = await res.json();
-        
-        document.getElementById('mTitle').value = i.title || i.name;
-        document.getElementById('mDesc').value = i.overview;
-        document.getElementById('mRating').value = i.vote_average.toFixed(1);
-        document.getElementById('mGenre').value = i.genres.map(g => g.name).join(", ");
-        if(i.poster_path) document.getElementById('posterPreview').src = `https://image.tmdb.org/t/p/w500${i.poster_path}`;
-        if(i.backdrop_path) document.getElementById('mBackdrop').value = `https://image.tmdb.org/t/p/w500${i.backdrop_path}`;
-        
-        if(i.videos && i.videos.results) {
-            const trailer = i.videos.results.find(v => v.site === "YouTube" && v.type === "Trailer") || i.videos.results[0];
-            if(trailer) document.getElementById('mTrailer').value = `https://www.youtube.com/watch?v=${trailer.key}`;
-        }
-        if(i.credits && i.credits.cast) {
-            document.getElementById('mCast').value = i.credits.cast.slice(0, 5).map(c => c.name).join(", ");
-        }
-
-        const isSeries = type === 'tv';
-        document.getElementById('mType').value = isSeries ? 'series' : 'movie';
-        toggleTypeUI();
-    }
-
-    // 4. AUTO FETCH EPISODE
-    async function fetchEpisodeInfo() {
-        const id = document.getElementById('tmdbId').value;
-        const s = document.getElementById('mSeason').value;
-        const e = document.getElementById('epNum').value;
-        if(!id) return showModal("ERROR", "Search Series First!");
-        try {
-            const res = await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${s}/episode/${e}?api_key=${tmdbKey}`);
-            const data = await res.json();
-            if(data.name) {
-                const base = document.getElementById('mTitle').value.split(' - ')[0]; 
-                document.getElementById('mTitle').value = `${base} S${s} E${e} - ${data.name}`;
-                if(data.still_path) document.getElementById('mBackdrop').value = `https://image.tmdb.org/t/p/w500${data.still_path}`;
-                document.getElementById('mDesc').value = data.overview || document.getElementById('mDesc').value;
-                showModal("SUCCESS", "Episode Fetched!");
-            }
-        } catch(err) { showModal("ERROR", "Not Found (Use VPN)"); }
-    }
-
-    function autoFillLink() {
-        const url = document.getElementById('lLink').value;
-        if(url.match(/(\d+(\.\d+)?GB)/i)) document.getElementById('lSize').value = url.match(/(\d+(\.\d+)?GB)/i)[0];
-        if(url.includes('1080p')) document.getElementById('linkQual').value = '1080p';
-        else if(url.includes('720p')) document.getElementById('linkQual').value = '720p';
-        else if(url.includes('4K')) document.getElementById('linkQual').value = '4K';
-    }
-
-    // 5. SMART DATA RECOVERY (Fixed Title Issue)
-    function renderDB() {
-        const q = document.getElementById('dbSearch').value.toLowerCase();
-        db.ref('movies').once('value', s => {
-            const d = s.val(); 
-            let h = '';
-            if(d) Object.keys(d).reverse().forEach(k => {
-                const m = d[k];
-                // Check multiple keys for title
-                let displayTitle = m.title || m.name || m.movieName || "No Title";
-                if(displayTitle.toLowerCase().includes(q)) {
-                    h += `<div class="list-item" style="border-left:3px solid var(--cyan);">
-                        <img src="${m.img || m.poster}" style="width:40px; height:60px; object-fit:cover; margin-right:10px;">
-                        <div style="flex:1;">
-                            <b style="color:#fff;">${displayTitle}</b><br>
-                            <small style="color:#ccc;">${m.res || 'HD'} • ${m.lang || ''}</small>
-                        </div>
-                        <div style="display:flex; gap:10px;">
-                            <i class="fa-solid fa-pen" style="color:var(--cyan); cursor:pointer;" onclick="loadEdit('${k}')"></i>
-                            <i class="fa-solid fa-trash" style="color:var(--red); cursor:pointer;" onclick="delItem('movies/${k}'); renderDB()"></i>
-                        </div>
-                    </div>`;
-                }
-            });
-            document.getElementById('dbList').innerHTML = h || '<div style="text-align:center;padding:20px;color:#555">No Movies Found</div>';
-        });
-    }
-
-    function loadEdit(id) {
-        db.ref('movies/' + id).once('value', s => {
-            const m = s.val();
-            if(!m) return;
-            switchTab('upload');
-            
-            document.getElementById('editId').value = id;
-            
-            // --- AGGRESSIVE DATA RECOVERY ---
-            document.getElementById('mTitle').value = m.title || m.name || m.movieName || "";
-            document.getElementById('mDesc').value = m.desc || m.plot || m.overview || m.description || "";
-            document.getElementById('mGenre').value = m.genre || m.genres || m.category || m.tags || "";
-            document.getElementById('posterPreview').src = m.img || m.poster || "";
-            document.getElementById('mBackdrop').value = m.backdrop || m.cover || "";
-            document.getElementById('mTrailer').value = m.trailer || "";
-            document.getElementById('mCast').value = m.cast || "";
-            document.getElementById('mRating').value = m.rating || "";
-            document.getElementById('mNotice').value = m.note || "";
-            document.getElementById('lQual').value = m.res || "720p HD";
-            document.getElementById('mLang').value = m.lang || "Dual Audio";
-            document.getElementById('isFeatured').checked = m.isFeatured || false;
-            document.getElementById('mType').value = m.type || "movie";
-            
-            if(m.type === 'series') document.getElementById('mSeason').value = m.seasonNum || 1;
-            toggleTypeUI();
-
-            tempLinks = [];
-            if(m.content) {
-                if(m.type === 'series') {
-                    m.content.forEach(epData => { if(epData.qualities) epData.qualities.forEach(q => tempLinks.push({...q, ep: epData.epNum})); });
-                } else {
-                    m.content.forEach(q => tempLinks.push({...q, ep: 0}));
-                }
-            } else if (m.seasons) {
-                m.seasons.forEach((s, i) => { tempLinks.push({ dl: s.dl||s.link, watch: "", qual: "720p", size: "N/A", ep: i+1 }); });
-                showModal("RECOVERED", "Old Series Data Loaded");
-            } else if (m.link || m.dl || m.downloadLink) {
-                let link = m.link || m.dl || m.downloadLink;
-                tempLinks.push({ dl: link, watch: m.watchLink||"", qual: m.res||"720p", size: "N/A", ep: 0 });
-                showModal("RECOVERED", "Old Movie Data Loaded");
-            }
-            renderLinks();
-        });
-    }
-
-    // 6. PUBLISH & LINKS
-    function processLink() {
-        const url = document.getElementById('lLink').value; 
-        if(!url) return;
-        if(linkState===0) { currentDL=url; linkState=1; document.getElementById('linkLbl').innerText="2. Watch Link"; document.getElementById('linkLbl').style.color="#0f0"; document.getElementById('lLink').value=""; }
-        else {
-            let ep = document.getElementById('mType').value==='series' ? parseInt(document.getElementById('epNum').value) : 0;
-            tempLinks.push({ dl:currentDL, watch:url, qual:document.getElementById('linkQual').value, size:document.getElementById('lSize').value, ep:ep });
-            if(ep>0) document.getElementById('epNum').value = ep+1;
-            linkState=0; document.getElementById('linkLbl').innerText="1. DL Link"; document.getElementById('linkLbl').style.color="var(--cyan)"; document.getElementById('lLink').value="";
-            renderLinks();
-        }
-    }
-    function renderLinks(){ document.getElementById('linkContainer').innerHTML = tempLinks.map((l,i)=>`<div class="list-item"><span>${l.ep>0?'EP '+l.ep:''} ${l.qual} ${l.size}</span><i class="fa-solid fa-trash" style="color:red; cursor:pointer;" onclick="tempLinks.splice(${i},1);renderLinks()"></i></div>`).join(''); }
-
-    function publish() {
-        const id = document.getElementById('editId').value || 'mov_' + Date.now();
-        const type = document.getElementById('mType').value;
-        
-        let finalTitle = document.getElementById('mTitle').value;
-        const lang = document.getElementById('mLang').value;
-        const res = document.getElementById('lQual').value;
-        let size = "";
-        
-        // AUTO TITLE LOGIC
-        if(tempLinks.length > 0) size = tempLinks[0].size || "";
-        if(!finalTitle.includes(res)) finalTitle += ` • ${res}`;
-        if(!finalTitle.includes(lang.split(' ')[0])) finalTitle += ` • ${lang.split(' ')[0]}`;
-        if(size && !finalTitle.includes(size)) finalTitle += ` • ${size}`;
-
-        let contentData = tempLinks;
-        if(type === 'series') {
-            const episodes = {};
-            tempLinks.forEach(l => {
-                if(!episodes[l.ep]) episodes[l.ep] = { epNum: l.ep, qualities: [] };
-                episodes[l.ep].qualities.push(l);
-            });
-            contentData = Object.values(episodes);
-        } else {
-            contentData = tempLinks.map(l => ({ qual:l.qual, size:l.size, dl:l.dl, watch:l.watch }));
-        }
-
-        const data = {
-            title: finalTitle, img: document.getElementById('posterPreview').src, backdrop: document.getElementById('mBackdrop').value,
-            trailer: document.getElementById('mTrailer').value, cast: document.getElementById('mCast').value, rating: document.getElementById('mRating').value,
-            type: type, seasonNum: document.getElementById('mSeason').value, lang: lang,
-            genre: document.getElementById('mGenre').value, desc: document.getElementById('mDesc').value, res: res,
-            note: document.getElementById('mNotice').value, content: contentData, uploadTime: new Date().toISOString(),
-            isFeatured: document.getElementById('isFeatured').checked
-        };
-        db.ref('movies/' + id).update(data).then(() => { showModal("SUCCESS", "Published!"); resetForm(); });
-    }
-
-    // UTILS
-    function triggerReset(){ resetForm(); }
-    function resetForm(){ document.getElementById('mTitle').value=""; tempLinks=[]; renderLinks(); }
-    function toggleTypeUI(){ const s=document.getElementById('mType').value==='series'; document.getElementById('seasonBox').style.display=s?'block':'none'; document.getElementById('epBox').style.display=s?'block':'none'; document.getElementById('btnFetchEP').style.display=s?'block':'none'; }
-    function delItem(p){ if(confirm("Delete?")) db.ref(p).remove(); }
-    function switchTab(t){ document.querySelectorAll('.tab-content').forEach(e=>e.style.display='none'); document.getElementById(t).style.display='block'; document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active')); event.currentTarget.classList.add('active'); if(t==='database')renderDB();}
-    function showModal(t,m){ document.getElementById('modalTitle').innerText=t; document.getElementById('modalBody').innerHTML=m; document.getElementById('masterModal').style.display='flex'; }
-    function closeModal(){ document.getElementById('masterModal').style.display='none'; }
-    function playSound(t){ if(audioCtx.state==='suspended')audioCtx.resume(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.1); }
-    
-    window.onload = () => { db.ref('movies').on('value', s => document.getElementById('totalMovies').innerText = s.numChildren()); }
-</script>
 </body>
 </html>
