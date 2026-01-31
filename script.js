@@ -294,7 +294,7 @@ function downloadGeneratedExcel() {
 }
 
 // ==========================================
-// 2. PRO BULK UPLOAD (MERGE + SERIES + SIZE)
+// 2. PRO BULK UPLOAD (FIXED: SHOW FULL SMART TITLE)
 // ==========================================
 
 function handleBulkUpload(input) {
@@ -307,16 +307,18 @@ function handleBulkUpload(input) {
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(sheet);
 
-        if(confirm(`Found ${json.length} items. Upload with PRO Logic (Merge & Size)?`)) {
-            alert("Starting Upload... This will Merge Qualities & Detect Series!");
+        if(confirm(`Found ${json.length} items. Upload with SMART TITLES?`)) {
+            alert("Starting Upload... Titles will appear exactly as in Excel!");
             
             let count = 0;
             for (const row of json) {
-                let fullTitle = row.Title || row.title || "No Title";
-                let cleanTitle = fullTitle.split('(')[0].trim(); 
+                // 1. Get Titles
+                let fullTitle = row.Title || row.title || "No Title"; // Smart Title (e.g., Pathan 4K...)
+                let cleanTitle = fullTitle.split('(')[0].trim();      // Clean Title (e.g., Pathan)
+                
                 const year = row.Year || row.year || "";
                 const quality = row.Quality || row.quality || "HD"; 
-                const size = row.Size || row.size || ""; // Read Size
+                const size = row.Size || row.size || ""; 
                 const mainWatch = row.Link || row.link || "";     
                 const mainDL = row.Download || row.download || ""; 
 
@@ -361,7 +363,7 @@ function handleBulkUpload(input) {
                     }
                 }
 
-                // MERGE LOGIC (ID Generation)
+                // ID Generation
                 const dbId = tmdbId ? `mov_${tmdbId}` : 'mov_' + cleanTitle.replace(/[^a-zA-Z0-9]/g, '');
                 
                 const newContent = {
@@ -369,7 +371,7 @@ function handleBulkUpload(input) {
                     server2: finalServer2,
                     dl: mainDL,
                     qual: quality,
-                    size: size, // Save Size
+                    size: size,
                     ep: isSeries ? episode : 0,
                     season: isSeries ? season : 0,
                     id: Date.now() + Math.random()
@@ -384,9 +386,16 @@ function handleBulkUpload(input) {
                     await db.ref('movies/' + dbId + '/content').set(contentList);
                 } else {
                     const movieData = {
-                        title: cleanTitle, year: year, type: isSeries ? 'series' : 'movie',
-                        img: posterUrl, backdrop: backdrop, desc: desc, genre: genre,
-                        ratings: { imdb: imdbRating }, uploadTime: new Date().toISOString(),
+                        title: fullTitle, // 🔥 CHANGE: Use 'fullTitle' instead of 'cleanTitle'
+                        cleanTitle: cleanTitle, // Keep clean title for backup
+                        year: year, 
+                        type: isSeries ? 'series' : 'movie',
+                        img: posterUrl, 
+                        backdrop: backdrop, 
+                        desc: desc, 
+                        genre: genre,
+                        ratings: { imdb: imdbRating }, 
+                        uploadTime: new Date().toISOString(),
                         res: quality,
                         content: [newContent]
                     };
@@ -394,7 +403,7 @@ function handleBulkUpload(input) {
                 }
                 count++;
             }
-            alert(`SUCCESS! ${count} items uploaded & merged.`);
+            alert(`SUCCESS! ${count} movies uploaded with FULL TITLES.`);
             renderDB();
         }
     };
