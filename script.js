@@ -294,7 +294,7 @@ function downloadGeneratedExcel() {
 }
 
 // ==========================================
-// 2. PRO BULK UPLOAD (FIXED: SHOW FULL SMART TITLE)
+// 2. PRO BULK UPLOAD (FIXED: FORCE AUTO + EXCEL LINK)
 // ==========================================
 
 function handleBulkUpload(input) {
@@ -307,22 +307,24 @@ function handleBulkUpload(input) {
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(sheet);
 
-        if(confirm(`Found ${json.length} items. Upload with SMART TITLES?`)) {
-            alert("Starting Upload... Titles will appear exactly as in Excel!");
+        if(confirm(`Found ${json.length} items. Upload with AUTO SERVERS + EXCEL LINK?`)) {
+            alert("Starting Upload... Please wait...");
             
             let count = 0;
             for (const row of json) {
-                // 1. Get Titles
-                let fullTitle = row.Title || row.title || "No Title"; // Smart Title (e.g., Pathan 4K...)
-                let cleanTitle = fullTitle.split('(')[0].trim();      // Clean Title (e.g., Pathan)
+                // Titles
+                let fullTitle = row.Title || row.title || "No Title"; 
+                let cleanTitle = fullTitle.split('(')[0].trim();      
                 
                 const year = row.Year || row.year || "";
                 const quality = row.Quality || row.quality || "HD"; 
                 const size = row.Size || row.size || ""; 
-                const mainWatch = row.Link || row.link || "";     
-                const mainDL = row.Download || row.download || ""; 
+                
+                // 🔥 Excel Link -> Watch Button
+                const excelWatchLink = row.Link || row.link || "";     
+                const excelDL = row.Download || row.download || ""; 
 
-                // Detect Series logic
+                // Series Check
                 let isSeries = false, season = 1, episode = 1;
                 const seMatch = cleanTitle.match(/S(\d+)\s*E(\d+)/i) || cleanTitle.match(/Season\s*(\d+)\s*Episode\s*(\d+)/i);
                 if (seMatch) {
@@ -332,28 +334,41 @@ function handleBulkUpload(input) {
                     isSeries = true;
                 }
 
-                // TMDB Fetch logic
-                let tmdbId = "", posterUrl = "https://via.placeholder.com/300x450?text=No+Poster", backdrop = "", desc = "Added via Bulk Upload", genre = "Action", imdbRating = "N/A";
+                // TMDB Fetch
+                let tmdbId = "", posterUrl = "https://via.placeholder.com/300x450?text=No+Poster", backdrop = "", desc = "Uploaded via Excel", genre = "Action", imdbRating = "N/A", trailer = "", cast = "";
+                
                 try {
                     const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanTitle)}`);
                     const searchData = await searchRes.json();
+                    
                     if (searchData.results && searchData.results.length > 0) {
                         const match = searchData.results[0]; tmdbId = match.id;
                         const type = isSeries ? 'tv' : (match.media_type === 'tv' ? 'tv' : 'movie');
-                        const detailRes = await fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${TMDB_KEY}`);
+                        
+                        const detailRes = await fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${TMDB_KEY}&append_to_response=videos,credits,external_ids`);
                         const details = await detailRes.json();
+                        
                         if (details.poster_path) posterUrl = `https://image.tmdb.org/t/p/original${details.poster_path}`;
                         if (details.backdrop_path) backdrop = `https://image.tmdb.org/t/p/original${details.backdrop_path}`;
                         if (details.overview) desc = details.overview;
                         if (details.genres) genre = details.genres.map(g => g.name).join(", ");
-                        if (details.vote_average) imdbRating = details.vote_average.toFixed(1);
+                        
+                        if (details.videos && details.videos.results) {
+                            const vid = details.videos.results.find(v => v.site === "YouTube" && v.type === "Trailer");
+                            if(vid) trailer = `https://www.youtube.com/watch?v=${vid.key}`;
+                        }
+                        if (details.credits && details.credits.cast) {
+                            cast = details.credits.cast.slice(0, 5).map(c => c.name).join(", ");
+                        }
+                        if(details.vote_average) imdbRating = details.vote_average.toFixed(1); 
                     }
-                } catch (e) {}
+                } catch (e) { console.log("Fetch Error", e); }
 
-                // Auto Links
-                let finalServer1 = mainWatch; 
+                // 🔥 FORCE AUTO LINKS GENERATION (সব সময় জেনারেট হবে)
+                let finalServer1 = ""; 
                 let finalServer2 = "";
-                if (!mainWatch) {
+
+                if (tmdbId) {
                     if (isSeries) {
                         finalServer1 = `https://vidsrc.pro/embed/tv/${tmdbId}/${season}/${episode}`;
                         finalServer2 = `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${season}&e=${episode}`;
@@ -363,13 +378,14 @@ function handleBulkUpload(input) {
                     }
                 }
 
-                // ID Generation
+                // ID
                 const dbId = tmdbId ? `mov_${tmdbId}` : 'mov_' + cleanTitle.replace(/[^a-zA-Z0-9]/g, '');
                 
                 const newContent = {
-                    server1: finalServer1,
-                    server2: finalServer2,
-                    dl: mainDL,
+                    server1: finalServer1, // ✅ Auto English
+                    server2: finalServer2, // ✅ Auto Hindi (MultiEmbed)
+                    watch: excelWatchLink, // ✅ Your Excel Link (Custom Hindi)
+                    dl: excelDL,
                     qual: quality,
                     size: size,
                     ep: isSeries ? episode : 0,
@@ -377,7 +393,7 @@ function handleBulkUpload(input) {
                     id: Date.now() + Math.random()
                 };
 
-                // Check & Merge
+                // Database Save
                 const snapshot = await db.ref('movies/' + dbId).once('value');
                 if (snapshot.exists()) {
                     let existingData = snapshot.val();
@@ -386,15 +402,17 @@ function handleBulkUpload(input) {
                     await db.ref('movies/' + dbId + '/content').set(contentList);
                 } else {
                     const movieData = {
-                        title: fullTitle, // 🔥 CHANGE: Use 'fullTitle' instead of 'cleanTitle'
-                        cleanTitle: cleanTitle, // Keep clean title for backup
+                        title: fullTitle,
+                        cleanTitle: cleanTitle,
                         year: year, 
                         type: isSeries ? 'series' : 'movie',
                         img: posterUrl, 
                         backdrop: backdrop, 
                         desc: desc, 
                         genre: genre,
-                        ratings: { imdb: imdbRating }, 
+                        trailer: trailer,
+                        cast: cast,
+                        ratings: { imdb: imdbRating },
                         uploadTime: new Date().toISOString(),
                         res: quality,
                         content: [newContent]
@@ -403,7 +421,7 @@ function handleBulkUpload(input) {
                 }
                 count++;
             }
-            alert(`SUCCESS! ${count} movies uploaded with FULL TITLES.`);
+            alert(`SUCCESS! ${count} movies uploaded.`);
             renderDB();
         }
     };
